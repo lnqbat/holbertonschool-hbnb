@@ -1,66 +1,58 @@
 ```mermaid
 classDiagram
+    class BaseModel {
+        +id : UUID
+        +createdAt : Date
+        +updatedAt : Date
+        +save
+        +delete
+    }
 
-class BaseModel {
-    +id :
-    +created_at : datetime
-    +updated_at : datetime
-    +save() : void
-    +dict() : dict
-}
+    class User {
+        +firstName : String
+        +lastName : String
+        +email : String
+        +password : String
+        +createUser
+        +updateUser
+        +deleteUser
+        +authenticate
+    }
 
-class User {
-    +email : str
-    +first_name : str
-    +last_name : str
-    -password : str
-    +save() : void
-    +dict() : dict
-    +get_places()
-    +get_reviews()
-}
+    class Place {
+        +userId : UUID
+        +name : String
+        +description : String
+        +createPlace
+        +updatePlace
+        +deletePlace
+        +searchPlace
+    }
 
-class Place {
-    +name : str
-    +description : str
-    +numb_rooms : int
-    +numb_bathrooms : int
-    +max_guest : int
-    +price_by_night : int
-    +latitude : float
-    +longitude : float
-    -user_id
-    -city_id
-    +save() : void
-    +dict() : dict
-    +get_amenities()
-    +get_reviews()
-}
+    class Review {
+        +userId : UUID
+        +placeId : UUID
+        +text : String
+        +createReview
+        +updateReview
+        +deleteReview
+        +validateReview
+    }
 
-class Review {
-    +text : str
-    -user_id
-    -place_id
-    +save() : void
-    +dict() : dict
-}
+    class Amenity {
+        +name : String
+        +createAmenity
+        +updateAmenity
+        +deleteAmenity
+    }
 
-class Amenity {
-    +name : str
-    +save() : void
-    +dict() : dict
-}
+    BaseModel <|-- User
+    BaseModel <|-- Place
+    BaseModel <|-- Review
+    BaseModel <|-- Amenity
 
-%% Inheritance
-User --|> BaseModel
-Place --|> BaseModel
-Review --|> BaseModel
-Amenity --|> BaseModel
-
-%% Associations
-User --> Place
-User --> Review
-Place --> Review
-Place --> Amenity
-Review --> User
-Review --> Place
+    User --> "*" Place : creates
+    Place --> "*" Review : has
+    User --> "*" Review : writes
+    Place --> "*" Amenity : includes
+    Amenity --> "*" Place
