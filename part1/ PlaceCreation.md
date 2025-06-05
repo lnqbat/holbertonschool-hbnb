@@ -11,3 +11,4 @@ sequenceDiagram
     DB-->>BL: Return confirmation (new place record)
     BL-->>API: Return new place object
     API-->>Client: 201 Created, place object
+    
