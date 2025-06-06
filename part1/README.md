@@ -1,7 +1,7 @@
 <h1 align="center">Technical Architecture Document</h1>
 
 <p align="center">
-  <img src="https://github.com/lnqbat/holbertonschool-hbnb/blob/main/part1/HBNB.png" alt="Logo du projet" width="200"/>
+  <img src="https://github.com/lnqbat/holbertonschool-hbnb/blob/main/part1/image/HBNB.png" alt="Logo du projet" width="250"/>
 </p>
 
 ## Summary:
