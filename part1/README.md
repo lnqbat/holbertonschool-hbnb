@@ -42,8 +42,65 @@ The package diagram illustrates the overall structure of the HBnB system, highli
 
 ### Class Diagram
 
-![Class](https://github.com/lnqbat/holbertonschool-hbnb/blob/main/part1/Diagram_class.md)
+````mermaid
+classDiagram
+    class BaseModel {
+        +id : UUID
+        +createdAt : Date
+        +updatedAt : Date
+        +save
+        +delete
+    }
 
+    class User {
+        +firstName : String
+        +lastName : String
+        +email : String
+        +password : String
+        +createUser
+        +updateUser
+        +deleteUser
+        +authenticate
+    }
+
+    class Place {
+        +userId : UUID
+        +name : String
+        +description : String
+        +createPlace
+        +updatePlace
+        +deletePlace
+        +searchPlace
+    }
+
+    class Review {
+        +userId : UUID
+        +placeId : UUID
+        +text : String
+        +createReview
+        +updateReview
+        +deleteReview
+        +validateReview
+    }
+
+    class Amenity {
+        +name : String
+        +createAmenity
+        +updateAmenity
+        +deleteAmenity
+    }
+
+    BaseModel <|-- User
+    BaseModel <|-- Place
+    BaseModel <|-- Review
+    BaseModel <|-- Amenity
+
+    User --> "*" Place : creates
+    Place --> "*" Review : has
+    User --> "*" Review : writes
+    Place --> "*" Amenity : includes
+    Amenity --> "*" Place
+````
 The class diagram provides an in-depth view of the Business Logic Layer, detailing the core entities and their interrelationships.
 
 
@@ -63,7 +120,20 @@ The class diagram provides an in-depth view of the Business Logic Layer, detaili
 
 #### 4.1 User Registration
 
-![User](https://github.com/lnqbat/holbertonschool-hbnb/blob/main/part1/UserRegistration.md)
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API
+    participant UserModel
+    participant DB
+
+    Client->>API: POST / api / v1 / users
+    API->>UserModel: validate_user_data(data)
+    UserModel->>DB: INSERT INTO users
+    DB-->>UserModel: user_id
+    UserModel-->>API: return created user
+    API-->>Client: 201 Created + user data
+```
 
 Illustrates how a new user registers through the system.
 
@@ -74,7 +144,20 @@ Illustrates how a new user registers through the system.
 
 #### 4.2 Place Creation
 
-![Place](https://github.com/lnqbat/holbertonschool-hbnb/blob/main/part1/%20PlaceCreation.md)
+```mermaid
+sequenceDiagram
+    participant Client as User
+    participant API as API/Service
+    participant BL as Business Logic
+    participant DB as Persistence Layer (DB)
+
+    Client->>API: POST /places (place data)
+    API->>BL: createPlace(place data)
+    BL->>DB: INSERT place record with associated owner ID
+    DB-->>BL: Return confirmation (new place record)
+    BL-->>API: Return new place object
+    API-->>Client: 201 Created, place object
+```
 
 Shows the flow for adding a new accommodation listing.
 
@@ -84,7 +167,20 @@ Shows the flow for adding a new accommodation listing.
 
 #### 4.3 Review
 
-![Revew](https://github.com/lnqbat/holbertonschool-hbnb/blob/main/part1/ReviewSubmission.md)
+```mermaid
+sequenceDiagram
+    participant Client as User
+    participant API as API/Service
+    participant BL as Business Logic
+    participant DB as Persistence Layer (DB)
+
+    Client->>API: POST /places/{placeId}/reviews (review data)
+    API->>BL: submitReview(review data, user ID, placeId)
+    BL->>DB: INSERT review record linked to user and place
+    DB-->>BL: Return confirmation (review record with timestamps)
+    BL-->>API: Return review object
+    API-->>Client: 201 Created, review object
+```
 
 Demonstrates how a review is created for a place.
 
@@ -94,7 +190,20 @@ Demonstrates how a review is created for a place.
 
 #### 4.4 Fetching Place Listings
 
-![Fetching](https://github.com/lnqbat/holbertonschool-hbnb/blob/main/part1/FetchingaListofPlaces.md)
+```mermaid
+sequenceDiagram
+    participant Client as User
+    participant API as API/Service
+    participant BL as Business Logic
+    participant DB as Persistence Layer (DB)
+
+    Client->>API: GET /places?criteria=filters
+    API->>BL: fetchPlaces(criteria)
+    BL->>DB: SELECT places WHERE criteria match
+    DB-->>BL: Return list of matching places
+    BL-->>API: Return list of place objects
+    API-->>Client: 200 OK, list of places
+```
 
 Outlines how places are retrieved and returned to the client.
 
