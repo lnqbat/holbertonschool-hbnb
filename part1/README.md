@@ -4,7 +4,6 @@
   <img src="https://github.com/lnqbat/holbertonschool-hbnb/blob/main/part1/HBNB.png" alt="Logo du projet" width="200"/>
 </p>
 
-
 ## Summary:
 - [Introduction](#1-introduction)
 - [Architecture](#2-architecture)
@@ -43,8 +42,7 @@ The package diagram illustrates the overall structure of the HBnB system, highli
 
 ### Class Diagram
 
-_(Insert Diagram Here)_
-
+![Class](https://github.com/lnqbat/holbertonschool-hbnb/blob/main/part1/Diagram_class.md)
 
 The class diagram provides an in-depth view of the Business Logic Layer, detailing the core entities and their interrelationships.
 
@@ -65,10 +63,9 @@ The class diagram provides an in-depth view of the Business Logic Layer, detaili
 
 #### 4.1 User Registration
 
-_(Insert Diagram Here)_
+![User](https://github.com/lnqbat/holbertonschool-hbnb/blob/main/part1/UserRegistration.md)
 
 Illustrates how a new user registers through the system.
-
 
 1. Client submits registration details to API.
 2. API controller validates input and calls `UserService`.
@@ -77,10 +74,9 @@ Illustrates how a new user registers through the system.
 
 #### 4.2 Place Creation
 
-_(Insert Diagram Here)_
+![Place](https://github.com/lnqbat/holbertonschool-hbnb/blob/main/part1/%20PlaceCreation.md)
 
 Shows the flow for adding a new accommodation listing.
-
 
 1. Authenticated user submits place data.
 2. `PlaceController` delegates to `PlaceService`.
@@ -88,10 +84,9 @@ Shows the flow for adding a new accommodation listing.
 
 #### 4.3 Review
 
-_(Insert Diagram Here)_
+![Revew](https://github.com/lnqbat/holbertonschool-hbnb/blob/main/part1/ReviewSubmission.md)
 
 Demonstrates how a review is created for a place.
-
 
 1. User submits review through API.
 2. `ReviewController` validates and calls `ReviewService`.
@@ -99,16 +94,15 @@ Demonstrates how a review is created for a place.
 
 #### 4.4 Fetching Place Listings
 
-_(Insert Diagram Here)_
+![Fetching](https://github.com/lnqbat/holbertonschool-hbnb/blob/main/part1/FetchingaListofPlaces.md)
 
 Outlines how places are retrieved and returned to the client.
-
 
 1. Client requests list of places.
 2. `PlaceController` queries `PlaceService`.
 3. Service aggregates data (e.g., amenities, reviews) and returns it.
 
-**Design Rationale for All Sequence Diagrams:**
+**Design for All Sequence Diagrams:**
 - Clear separation of responsibilities across controller, service, and repository layers.
 - Emphasis on validation and business logic enforcement.
 - Consistent interaction patterns improve maintainability.
