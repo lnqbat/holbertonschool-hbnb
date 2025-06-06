@@ -1,9 +1,8 @@
 <h1 align="center">Technical Architecture Document</h1>
 
 <p align="center">
-  <img src="https://github.com/lnqbat/holbertonschool-hbnb/blob/main/part1/HBNB.png" alt="Logo du projet" width="200"/>
+  <img src="https://github.com/lnqbat/holbertonschool-hbnb/blob/main/part1/image/HBNB.png" alt="Logo du projet" width="250"/>
 </p>
-
 
 ## Summary:
 - [Introduction](#1-introduction)
@@ -43,9 +42,65 @@ The package diagram illustrates the overall structure of the HBnB system, highli
 
 ### Class Diagram
 
-_(Insert Diagram Here)_
+````mermaid
+classDiagram
+    class BaseModel {
+        +id : UUID
+        +createdAt : Date
+        +updatedAt : Date
+        +save
+        +delete
+    }
 
+    class User {
+        +firstName : String
+        +lastName : String
+        +email : String
+        +password : String
+        +createUser
+        +updateUser
+        +deleteUser
+        +authenticate
+    }
 
+    class Place {
+        +userId : UUID
+        +name : String
+        +description : String
+        +createPlace
+        +updatePlace
+        +deletePlace
+        +searchPlace
+    }
+
+    class Review {
+        +userId : UUID
+        +placeId : UUID
+        +text : String
+        +createReview
+        +updateReview
+        +deleteReview
+        +validateReview
+    }
+
+    class Amenity {
+        +name : String
+        +createAmenity
+        +updateAmenity
+        +deleteAmenity
+    }
+
+    BaseModel <|-- User
+    BaseModel <|-- Place
+    BaseModel <|-- Review
+    BaseModel <|-- Amenity
+
+    User --> "*" Place : creates
+    Place --> "*" Review : has
+    User --> "*" Review : writes
+    Place --> "*" Amenity : includes
+    Amenity --> "*" Place
+````
 The class diagram provides an in-depth view of the Business Logic Layer, detailing the core entities and their interrelationships.
 
 
@@ -65,10 +120,22 @@ The class diagram provides an in-depth view of the Business Logic Layer, detaili
 
 #### 4.1 User Registration
 
-_(Insert Diagram Here)_
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API
+    participant UserModel
+    participant DB
+
+    Client->>API: POST / api / v1 / users
+    API->>UserModel: validate_user_data(data)
+    UserModel->>DB: INSERT INTO users
+    DB-->>UserModel: user_id
+    UserModel-->>API: return created user
+    API-->>Client: 201 Created + user data
+```
 
 Illustrates how a new user registers through the system.
-
 
 1. Client submits registration details to API.
 2. API controller validates input and calls `UserService`.
@@ -77,10 +144,22 @@ Illustrates how a new user registers through the system.
 
 #### 4.2 Place Creation
 
-_(Insert Diagram Here)_
+```mermaid
+sequenceDiagram
+    participant Client as User
+    participant API as API/Service
+    participant BL as Business Logic
+    participant DB as Persistence Layer (DB)
+
+    Client->>API: POST /places (place data)
+    API->>BL: createPlace(place data)
+    BL->>DB: INSERT place record with associated owner ID
+    DB-->>BL: Return confirmation (new place record)
+    BL-->>API: Return new place object
+    API-->>Client: 201 Created, place object
+```
 
 Shows the flow for adding a new accommodation listing.
-
 
 1. Authenticated user submits place data.
 2. `PlaceController` delegates to `PlaceService`.
@@ -88,10 +167,22 @@ Shows the flow for adding a new accommodation listing.
 
 #### 4.3 Review
 
-_(Insert Diagram Here)_
+```mermaid
+sequenceDiagram
+    participant Client as User
+    participant API as API/Service
+    participant BL as Business Logic
+    participant DB as Persistence Layer (DB)
+
+    Client->>API: POST /places/{placeId}/reviews (review data)
+    API->>BL: submitReview(review data, user ID, placeId)
+    BL->>DB: INSERT review record linked to user and place
+    DB-->>BL: Return confirmation (review record with timestamps)
+    BL-->>API: Return review object
+    API-->>Client: 201 Created, review object
+```
 
 Demonstrates how a review is created for a place.
-
 
 1. User submits review through API.
 2. `ReviewController` validates and calls `ReviewService`.
@@ -99,16 +190,28 @@ Demonstrates how a review is created for a place.
 
 #### 4.4 Fetching Place Listings
 
-_(Insert Diagram Here)_
+```mermaid
+sequenceDiagram
+    participant Client as User
+    participant API as API/Service
+    participant BL as Business Logic
+    participant DB as Persistence Layer (DB)
+
+    Client->>API: GET /places?criteria=filters
+    API->>BL: fetchPlaces(criteria)
+    BL->>DB: SELECT places WHERE criteria match
+    DB-->>BL: Return list of matching places
+    BL-->>API: Return list of place objects
+    API-->>Client: 200 OK, list of places
+```
 
 Outlines how places are retrieved and returned to the client.
-
 
 1. Client requests list of places.
 2. `PlaceController` queries `PlaceService`.
 3. Service aggregates data (e.g., amenities, reviews) and returns it.
 
-**Design Rationale for All Sequence Diagrams:**
+**Design for All Sequence Diagrams:**
 - Clear separation of responsibilities across controller, service, and repository layers.
 - Emphasis on validation and business logic enforcement.
 - Consistent interaction patterns improve maintainability.
