@@ -24,3 +24,7 @@ class BaseModel:
             if hasattr(self, key):
                 setattr(self, key, value)
         self.save()
+
+    def to_dict(self):
+        result = self.__dict__.copy()
+        return result
