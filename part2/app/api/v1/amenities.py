@@ -40,16 +40,12 @@ class AmenityResource(Resource):
             return {'message': 'Amenity not found'}, 404
         return {'id': amenity.id, 'name': amenity.name}, 200
 
-    @api.expect(amenity_model)
-    @api.response(200, 'Amenity updated successfully')
+    @api.expect(amenity_model, validate=True)
     @api.response(404, 'Amenity not found')
     @api.response(400, 'Invalid input data')
     def put(self, amenity_id):
-        """Update an amenity's information"""
         data = request.get_json()
-        if not data or 'name' not in data:
-            return {'message': 'Name is required'}, 400
         amenity = facade.update_amenity(amenity_id, data)
         if not amenity:
             return {'message': 'Amenity not found'}, 404
-        return {'message': 'Amenity updated successfully'}, 200
+        return amenity.to_dict(), 200
