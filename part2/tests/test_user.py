@@ -17,7 +17,7 @@ class TestUser(unittest.TestCase):
 
         get_res = self.client.get(f'/api/v1/users/{user_id}')
         self.assertEqual(get_res.status_code, 200)
-        self.assertEqual(get_res.get_json()["email"], "leo.dubois@example.com")
+        self.assertEqual(get_res.get_json()["email"], "leo.salins@example.com")
 
     def test_update_user_valid(self):
         post_res = self.client.post('/api/v1/users/', json={
@@ -28,10 +28,11 @@ class TestUser(unittest.TestCase):
         user_id = post_res.get_json()["id"]
 
         put_res = self.client.put(f'/api/v1/users/{user_id}', json={
-            "first_name": "Marie",
+            "first_name": "Anna-Marie",
             "last_name": "Dupont",
-            "email": "marie.dupont@example.com"
+            "email": "anna.dupont@example.com"
         })
+
         self.assertEqual(put_res.status_code, 200)
         self.assertEqual(put_res.get_json()["first_name"], "Anna-Marie")
 
