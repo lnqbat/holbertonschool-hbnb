@@ -1,4 +1,4 @@
-from flask_restx import Api
+from flask_restx import Api # type: ignore
 from flask import Blueprint
 
 from app.api.v1.users import api as users_api

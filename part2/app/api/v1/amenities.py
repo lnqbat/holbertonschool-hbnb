@@ -1,10 +1,10 @@
-from flask_restx import Namespace, Resource, fields
+from flask_restx import Namespace, Resource, fields # type: ignore
 from flask import request
 from app.services.facade import HBnBFacade
 
 api = Namespace('amenities', description='Amenity operations')
 
-# Modèle pour validation input
+
 amenity_model = api.model('Amenity', {
     'name': fields.String(required=True, description='Name of the amenity')
 })
