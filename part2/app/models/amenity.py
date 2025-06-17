@@ -9,3 +9,9 @@ class Amenity(BaseModel):
         if not name or len(name) > 50:
             raise ValueError("Invalid amenity name")
         self.name = name
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name
+        }
