@@ -1,4 +1,4 @@
-from models import BaseModel
+from app.models import BaseModel
 
 class Amenity(BaseModel):
     
@@ -6,8 +6,7 @@ class Amenity(BaseModel):
         """
         Amenity class.
         """
-        if not name or len(name) > 50:
-            raise ValueError("Invalid amenity name")
+        super().__init__()
         self.name = name
 
     def to_dict(self):
