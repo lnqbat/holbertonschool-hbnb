@@ -1,6 +1,8 @@
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
 from app.models.amenity import Amenity
+from app.persistence.repository import AmenityRepository
+
 
 class HBnBFacade:
     def __init__(self, user_repository=None, place_repository=None, review_repository=None, amenity_repository=None):
@@ -32,22 +34,22 @@ class HBnBFacade:
     def get_all_users(self):
         return self.user_repository.get_all()
 
-    def create_amenity(self, amenity_data):
-        amenity = Amenity(**amenity_data)
-        self.amenity_repository.add(amenity)
-        return amenity
-
-    def get_amenity(self, amenity_id):
-        return self.amenity_repository.get(amenity_id)
+    def create_amenity(self, data):
+        amenity = Amenity(name=data['name'])
+        return self.amenity_repository.add(amenity)
 
     def get_all_amenities(self):
         return self.amenity_repository.get_all()
 
-    def update_amenity(self, amenity_id, amenity_data):
-        amenity = self.amenity_repository.get(amenity_id)
+    def get_amenity(self, amenity_id):
+        return self.amenity_repository.get(amenity_id)
+
+    def update_amenity(self, amenity_id, data):
+        return self.amenity_repository.update(amenity_id, data)
+
+    def delete_amenity(self, amenity_id):
+        amenity = self.get_amenity(amenity_id)
         if not amenity:
             return None
-        for key, value in amenity_data.items():
-            if hasattr(amenity, key):
-                setattr(amenity, key, value)
-        return amenity
+        self.amenity_repository.delete(amenity_id)
+        return True
