@@ -81,10 +81,19 @@ class HBnBFacade:
                 raise ValueError(f"Amenity not found: {amenity_id}")
             amenities.append(amenity)
 
-        place = Place(**place_data)
+        place = Place(
+            title=place_data['title'],
+            price=price,
+            latitude=latitude,
+            longitude=longitude,
+            owner=owner,
+            description=place_data.get('description', "")
+        )
         place.amenities = amenities
+
         self.place_repository.add(place)
         return place
+
 
     def get_place(self, place_id):
         place = self.place_repository.get(place_id)
@@ -96,30 +105,28 @@ class HBnBFacade:
         return self.place_repository.get_all()
 
     def update_place(self, place_id, place_data):
-        place = self.place_repository.get(place_id)
-        if not place:
-            raise ValueError("Place not found.")
-
-        for key, value in place_data.items():
-            if hasattr(place, key):
-                setattr(place, key, value)
-
-        if place.price < 0:
+        if 'price' in place_data and place_data['price'] < 0:
             raise ValueError("Price must be a non-negative float.")
-        if not (-90 <= place.latitude <= 90):
+        if 'latitude' in place_data and not (-90 <= place_data['latitude'] <= 90):
             raise ValueError("Latitude must be between -90 and 90.")
-        if not (-180 <= place.longitude <= 180):
+        if 'longitude' in place_data and not (-180 <= place_data['longitude'] <= 180):
             raise ValueError("Longitude must be between -180 and 180.")
 
+        if 'owner_id' in place_data:
+            owner = self.user_repository.get(place_data['owner_id'])
+            if not owner:
+                raise ValueError("The specified owner does not exist.")
+            place_data['owner'] = owner
+            del place_data['owner_id']
+
         if 'amenities' in place_data:
-            amenities_ids = place_data['amenities']
+            amenity_ids = place_data['amenities']
             amenities = []
-            for amenity_id in amenities_ids:
+            for amenity_id in amenity_ids:
                 amenity = self.amenity_repository.get(amenity_id)
                 if not amenity:
                     raise ValueError(f"Amenity not found: {amenity_id}")
                 amenities.append(amenity)
-            place.amenities = amenities
+            place_data['amenities'] = amenities
 
-        self.place_repository.update(place)
-        return place
+        return self.place_repository.update(place_id, place_data)
