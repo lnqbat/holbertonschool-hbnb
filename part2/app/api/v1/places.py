@@ -1,9 +1,9 @@
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
+from app.services import facade
+from flask import request
 
 api = Namespace('places', description='Place operations')
-facade = HBnBFacade()
-
 
 amenity_model = api.model('PlaceAmenity', {
     'id': fields.String(description='Amenity ID'),
@@ -45,7 +45,19 @@ class PlaceList(Resource):
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
         """Retrieve a list of all places"""
+        min_price = request.args.get('min_price', type=float)
+        max_price = request.args.get('max_price', type=float)
+        owner_id = request.args.get('owner_id')
+
         places = facade.get_all_places()
+
+        if min_price is not None:
+            places = [p for p in places if p.price >= min_price]
+        if max_price is not None:
+            places = [p for p in places if p.price <= max_price]
+        if owner_id:
+            places = [p for p in places if p.owner_id == owner_id]
+
         return [place.to_dict() for place in places], 200
 
 @api.route('/<place_id>')
@@ -56,7 +68,32 @@ class PlaceResource(Resource):
         """Get place details by ID"""
         try:
             place = facade.get_place(place_id)
-            return place.to_dict(), 200
+            owner = place.owner
+
+            amenities = [
+                {
+                    "id": str(am.id),
+                    "name": am.name
+                }
+                for am in place.amenities
+            ]
+
+            result = {
+                "id": str(place.id),
+                "title": place.title,
+                "description": place.description,
+                "latitude": place.latitude,
+                "longitude": place.longitude,
+                "owner": {
+                    "id": str(owner.id),
+                    "first_name": owner.first_name,
+                    "last_name": owner.last_name,
+                    "email": owner.email
+                },
+                "amenities": amenities
+            }
+
+            return result, 200
         except ValueError as e:
             return {'error': str(e)}, 404
 
