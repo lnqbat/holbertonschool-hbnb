@@ -162,3 +162,8 @@ def get_reviews_by_place(self, place_id):
         if not self.place_repository.get(place_id):
             raise ValueError("The specified place does not exist.")
         return self.review_repository.get_by_attribute('place_id', place_id)
+
+def update_review(self, review_id, review_data):
+        review = self.review_repository.get(review_id)
+        if not review:
+            raise ValueError("Review not found.")
