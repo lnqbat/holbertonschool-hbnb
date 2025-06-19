@@ -1,4 +1,4 @@
-from flask_restx import Namespace, Resource, fields # type: ignore
+from flask_restx import Namespace, Resource, fields
 from app.services import facade
 
 api = Namespace('users', description='User operations')
