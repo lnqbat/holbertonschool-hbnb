@@ -1,10 +1,12 @@
-from models import BaseModel
+from app.models import BaseModel
 
 class Review(BaseModel):
     def __init__(self, text, rating, place, user):
         """
         Review class.
         """
+        super().__init__()
+
         if not text:
             raise ValueError("Review text is required")
         if not (1 <= rating <= 5):
@@ -18,3 +20,19 @@ class Review(BaseModel):
         self.rating = rating
         self.place = place
         self.user = user
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'text': self.text,
+            'rating': self.rating,
+            'user_id': self.user.id if self.user else None,
+            'place_id': self.place.id if self.place else None,
+        }
+
+    def to_dict_get(self):
+        return {
+            'id': self.id,
+            'text': self.text,
+            'rating': self.rating,
+        }
