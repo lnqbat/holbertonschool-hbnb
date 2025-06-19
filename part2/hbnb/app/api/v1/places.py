@@ -106,7 +106,7 @@ class PlaceResource(Resource):
         data = api.payload
         try:
             place = facade.update_place(place_id, data)
-            return place.to_dict(), 200
+            return {"message": "Place updated successfully"}, 200
         except ValueError as e:
             return {'error': str(e)}, 404
         except Exception as e:
