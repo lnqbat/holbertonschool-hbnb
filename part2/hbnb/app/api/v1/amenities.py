@@ -48,4 +48,4 @@ class AmenityResource(Resource):
         amenity = facade.update_amenity(amenity_id, data)
         if not amenity:
             return {'message': 'Amenity not found'}, 404
-        return amenity.to_dict(), 200
+        return {'message': 'Amenity updated successfully'}, 200
