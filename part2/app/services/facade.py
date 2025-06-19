@@ -131,3 +131,34 @@ class HBnBFacade:
             place_data['amenities'] = amenities
 
         return self.place_repository.update(place_id, place_data)
+    
+
+def create_review(self, review_data):
+        user_id = review_data.get('user_id')
+        place_id = review_data.get('place_id')
+        rating = review_data.get('rating')
+
+        if not user_id or not self.user_repository.get(user_id):
+            raise ValueError("The specified user does not exist.")
+        if not place_id or not self.place_repository.get(place_id):
+            raise ValueError("The specified place does not exist.")
+        if rating is None or not (0 <= rating <= 5):
+            raise ValueError("Rating must be between 0 and 5.")
+
+        review = Review(**review_data)
+        self.review_repository.add(review)
+        return review
+
+def get_review(self, review_id):
+        review = self.review_repository.get(review_id)
+        if not review:
+            raise ValueError("Review not found.")
+        return review
+
+def get_all_reviews(self):
+    return self.review_repository.get_all()
+
+def get_reviews_by_place(self, place_id):
+        if not self.place_repository.get(place_id):
+            raise ValueError("The specified place does not exist.")
+        return self.review_repository.get_by_attribute('place_id', place_id)
