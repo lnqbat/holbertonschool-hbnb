@@ -95,9 +95,9 @@ python3 -m unittest discover -s tests
 
 Expected:
 ```
-....
+...........
 ----------------------------------------------------------------------
-Ran 4 tests in X.XXXs
+Ran 11 tests in 0.042s
 
 OK
 ```
