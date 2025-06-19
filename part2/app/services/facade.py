@@ -176,3 +176,10 @@ def update_review(self, review_id, review_data):
 
         self.review_repository.update(review)
         return review
+
+def delete_review(self, review_id):
+        review = self.review_repository.get(review_id)
+        if not review:
+            raise ValueError("Review not found.")
+        self.review_repository.delete(review_id)
+        return True
