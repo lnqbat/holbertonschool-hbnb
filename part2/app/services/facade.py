@@ -167,3 +167,12 @@ def update_review(self, review_id, review_data):
         review = self.review_repository.get(review_id)
         if not review:
             raise ValueError("Review not found.")
+        for key, value in review_data.items():
+            if hasattr(review, key):
+                setattr(review, key, value)
+
+        if review.rating is not None and not (0 <= review.rating <= 5):
+            raise ValueError("Rating must be between 0 and 5.")
+
+        self.review_repository.update(review)
+        return review
