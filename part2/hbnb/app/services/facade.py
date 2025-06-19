@@ -2,6 +2,7 @@ from app.persistence.repository import InMemoryRepository
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
+from app.models.review import Review
 
 class HBnBFacade:
     def __init__(self, user_repository=None, place_repository=None, review_repository=None, amenity_repository=None):
@@ -9,6 +10,7 @@ class HBnBFacade:
         self.place_repository = place_repository
         self.review_repository = review_repository
         self.amenity_repository = amenity_repository
+        self.reviews = {} 
 
     # User methods
     def create_user(self, user_data):
@@ -130,3 +132,80 @@ class HBnBFacade:
             place_data['amenities'] = amenities
 
         return self.place_repository.update(place_id, place_data)
+
+
+    def create_review(self, review_data):
+        user_id = review_data.get('user_id')
+        place_id = review_data.get('place_id')
+        rating = review_data.get('rating')
+
+        user = self.user_repository.get(user_id)
+        if not user:
+            raise ValueError("The specified user does not exist.")
+
+        place = self.place_repository.get(place_id)
+        if not place:
+            raise ValueError("The specified place does not exist.")
+
+        if rating is None or not (0 <= rating <= 5):
+            raise ValueError("Rating must be between 0 and 5.")
+
+        review = Review(
+            text=review_data.get('text'),
+            rating=rating,
+            user=user,
+            place=place
+        )
+
+        self.review_repository.add(review)
+        return review
+
+    def create_review(self, review_data):
+        user_id = review_data.get('user_id')
+        place_id = review_data.get('place_id')
+        rating = review_data.get('rating')
+        text = review_data.get('text')
+
+        user = self.user_repository.get(user_id)
+        place = self.place_repository.get(place_id)
+
+        if not user:
+            raise ValueError("The specified user does not exist.")
+        if not place:
+            raise ValueError("The specified place does not exist.")
+        if rating is None or not (0 <= rating <= 5):
+            raise ValueError("Rating must be between 0 and 5.")
+
+        review = Review(text=text, rating=rating, user=user, place=place)
+        self.reviews[review.id] = review
+        return review
+
+    def get_review(self, review_id):
+        review = self.reviews.get(review_id)
+        if not review:
+            raise ValueError("Review not found.")
+        return review
+
+    def get_all_reviews(self):
+        return list(self.reviews.values())
+
+    def get_reviews_by_place(self, place_id):
+        if not self.place_repository.get(place_id):
+            raise ValueError("Place not found.")
+        return [r for r in self.reviews.values() if r.place.id == place_id]
+
+    def update_review(self, review_id, data):
+        review = self.get_review(review_id)
+        if 'text' in data:
+            review.text = data['text']
+        if 'rating' in data:
+            rating = data['rating']
+            if not (0 <= rating <= 5):
+                raise ValueError("Rating must be between 0 and 5.")
+            review.rating = rating
+        return review
+
+    def delete_review(self, review_id):
+        if review_id not in self.reviews:
+            raise ValueError("Review not found.")
+        del self.reviews[review_id]
