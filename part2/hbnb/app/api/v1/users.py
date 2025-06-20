@@ -15,9 +15,7 @@ class UserList(Resource):
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered')
     def post(self):
-        """
-        Register a new user.
-        """
+        """ Register a new user """
         user_data = api.payload
         existing_user = facade.get_user_by_email(user_data['email'])
         if existing_user:
@@ -33,9 +31,7 @@ class UserList(Resource):
 
     @api.response(200, 'List of users retrieved successfully')
     def get(self):
-        """
-        Get a list of all users.
-        """
+        """ Get a list of all users """
         users = facade.get_all_users()
         return [
             {
@@ -51,7 +47,7 @@ class UserResource(Resource):
     @api.response(200, 'User details retrieved successfully')
     @api.response(404, 'User not found')
     def get(self, user_id):
-        """Get user details by ID"""
+        """ Retrieve user by ID """
         user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404
@@ -66,7 +62,7 @@ class UserResource(Resource):
     @api.response(200, 'User successfully updated')
     @api.response(404, 'User not found')
     def put(self, user_id):
-        """Update user information"""
+        """ Update user """
         update_data = api.payload
         updated_user = facade.update_user(user_id, update_data)
         if not updated_user:
