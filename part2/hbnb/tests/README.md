@@ -82,10 +82,10 @@ Expected: `400 Bad Request`
 
 ### ✅ Files Used
 
-- [`test_user.py`]() (Create, GET, PUT user)
-- [`test_place.py`]() (Valid + Invalid creation)
-- [`test_review.py`]() (Create, GET, PUT review with user + place setup)
-- [`test_amenity.py`]() (Create, GET, PUT amenity)
+- [`test_user.py`](https://github.com/lnqbat/holbertonschool-hbnb/blob/main/part2/hbnb/tests/test_user.py) (Create, GET, PUT user)
+- [`test_place.py`](https://github.com/lnqbat/holbertonschool-hbnb/blob/main/part2/hbnb/tests/test_place.py) (Valid + Invalid creation)
+- [`test_review.py`](https://github.com/lnqbat/holbertonschool-hbnb/blob/main/part2/hbnb/tests/test_review.py) (Create, GET, PUT review with user + place setup)
+- [`test_amenity.py`](https://github.com/lnqbat/holbertonschool-hbnb/blob/main/part2/hbnb/tests/test_amenity.py) (Create, GET, PUT amenity)
 
 ### 🧪 Run the tests
 
