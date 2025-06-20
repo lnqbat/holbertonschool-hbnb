@@ -34,7 +34,7 @@ class PlaceList(Resource):
     @api.response(201, 'Place successfully created')
     @api.response(400, 'Invalid input data')
     def post(self):
-        """Register a new place"""
+        """ Register a new place """
         data = api.payload
         try:
             place = facade.create_place(data)
@@ -44,7 +44,7 @@ class PlaceList(Resource):
 
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
-        """Retrieve a list of all places"""
+        """ Retrieve all places """
         min_price = request.args.get('min_price', type=float)
         max_price = request.args.get('max_price', type=float)
         owner_id = request.args.get('owner_id')
@@ -65,7 +65,7 @@ class PlaceResource(Resource):
     @api.response(200, 'Place details retrieved successfully')
     @api.response(404, 'Place not found')
     def get(self, place_id):
-        """Get place details by ID"""
+        """ Retrieve a place by ID """
         try:
             place = facade.get_place(place_id)
             owner = place.owner
@@ -102,7 +102,7 @@ class PlaceResource(Resource):
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
     def put(self, place_id):
-
+        """ Update place """
         data = api.payload
         try:
             place = facade.update_place(place_id, data)
