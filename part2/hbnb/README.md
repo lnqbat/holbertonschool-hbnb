@@ -58,12 +58,14 @@ API is available at: `http://localhost:5000/`
 
 ### 🔹 Reviews
 
-| Method | Route               | Description                 |
-|--------|---------------------|-----------------------------|
-| POST   | `/reviews`          | Create a new review         |
-| GET    | `/reviews`          | Retrieve all reviews        |
-| GET    | `/reviews/<id>`     | Retrieve a review by ID     |
-| PUT    | `/reviews/<id>`     | Update an existing review   |
+| Method | Route                | Description                   |
+|--------|--------------------- |-----------------------------  |
+| POST   | `/reviews`           | Create a new review           |
+| GET    | `/reviews`           | Retrieve all reviews          |
+| GET.   |`/reviews/<place_id>` | Retrieve a review by place ID |
+| GET    |`/reviews/<review_id>`| Retrieve a review by ID       |
+| PUT    | `/reviews/<id>`      | Update an existing review     |
+| DELETE | `/review/<review_id>`| Delete review by ID           |
 
 ### 🔹 Amenities
 
