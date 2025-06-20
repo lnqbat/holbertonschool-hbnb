@@ -16,6 +16,7 @@ review_model = api.model('Review', {
 class ReviewList(Resource):
     @api.expect(review_model)
     def post(self):
+        """ Register a new Review """
         data = request.json
         try:
             review = facade.create_review(data)
@@ -24,6 +25,7 @@ class ReviewList(Resource):
             api.abort(400, str(e))
 
     def get(self):
+        """ Retrieve all review """
         reviews = facade.get_all_reviews()
         return [r.to_dict_get() for r in reviews], 200
 
@@ -31,6 +33,7 @@ class ReviewList(Resource):
 @api.route('/<string:review_id>')
 class ReviewResource(Resource):
     def get(self, review_id):
+        """ Retrieve a review by review_ID """
         try:
             review = facade.get_review(review_id)
             return review.to_dict(), 200
@@ -39,6 +42,7 @@ class ReviewResource(Resource):
 
     @api.expect(review_model)
     def put(self, review_id):
+        """ Update review """
         data = request.json
         try:
             updated = facade.update_review(review_id, data)
@@ -47,6 +51,7 @@ class ReviewResource(Resource):
             api.abort(400, str(e))
 
     def delete(self, review_id):
+        """ Delete review """
         try:
             facade.delete_review(review_id)
             return {"message": "Review deleted successfully"}, 200
@@ -57,6 +62,7 @@ class ReviewResource(Resource):
 @api.route('/places/<string:place_id>/reviews')
 class PlaceReviewList(Resource):
     def get(self, place_id):
+        """ Retrieve a review by place ID """
         try:
             reviews = facade.get_reviews_by_place(place_id)
             return [r.to_dict_get() for r in reviews], 200
