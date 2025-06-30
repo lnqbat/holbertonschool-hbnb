@@ -19,11 +19,12 @@ class User(BaseModel):
         self.last_name = last_name
         self.email = email
         self.password = password
+        self.is_admin = False
         self.places = []
 
     def _is_valid_email(self, email):
-        rejex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        return re.match(rejex, email) is not None
+        regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        return re.match(regex, email) is not None
 
     def to_dict(self):
         return {
@@ -35,10 +36,8 @@ class User(BaseModel):
 
     def hash_password(self, password):
         from app import bcrypt
-        """Hashes the password before storing it."""
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def verify_password(self, password):
         from app import bcrypt
-        """Verifies if the provided password matches the hashed password."""
         return bcrypt.check_password_hash(self.password, password)
