@@ -14,6 +14,7 @@ class UserList(Resource):
     @api.expect(user_model, validate=True)
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered')
+    @api.response(400, 'Invalid input data')
     def post(self):
         """ Register a new user """
         user_data = api.payload
@@ -61,6 +62,7 @@ class UserResource(Resource):
     @api.expect(user_model, validate=True)
     @api.response(200, 'User successfully updated')
     @api.response(404, 'User not found')
+    @api.response(400, 'Invalid input data')
     def put(self, user_id):
         """ Update user """
         update_data = api.payload
