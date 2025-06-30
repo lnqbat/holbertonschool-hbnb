@@ -15,6 +15,8 @@ review_model = api.model('Review', {
 @api.route('/')
 class ReviewList(Resource):
     @api.expect(review_model)
+    @api.response(201, 'Review successfully created')
+    @api.response(400, 'Invalid input data')
     def post(self):
         """ Register a new Review """
         data = request.json
@@ -24,6 +26,7 @@ class ReviewList(Resource):
         except ValueError as e:
             api.abort(400, str(e))
 
+    @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
         """ Retrieve all review """
         reviews = facade.get_all_reviews()
@@ -32,6 +35,8 @@ class ReviewList(Resource):
 
 @api.route('/<string:review_id>')
 class ReviewResource(Resource):
+    @api.response(200, 'Review details retrieved successfully')
+    @api.response(404, 'Review not found')
     def get(self, review_id):
         """ Retrieve a review by review_ID """
         try:
@@ -41,6 +46,9 @@ class ReviewResource(Resource):
             api.abort(404, str(e))
 
     @api.expect(review_model)
+    @api.response(200, 'Review updated successfully')
+    @api.response(404, 'Review not found')
+    @api.response(400, 'Invalid input data')
     def put(self, review_id):
         """ Update review """
         data = request.json
@@ -50,6 +58,8 @@ class ReviewResource(Resource):
         except ValueError as e:
             api.abort(400, str(e))
 
+    @api.response(200, 'Review deleted successfully')
+    @api.response(404, 'Review not found')
     def delete(self, review_id):
         """ Delete review """
         try:
@@ -61,6 +71,8 @@ class ReviewResource(Resource):
 
 @api.route('/places/<string:place_id>/reviews')
 class PlaceReviewList(Resource):
+    @api.response(200, 'List of reviews for the place retrieved successfully')
+    @api.response(404, 'Place not found')
     def get(self, place_id):
         """ Retrieve a review by place ID """
         try:
