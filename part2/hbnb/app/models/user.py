@@ -1,6 +1,5 @@
 import re
 from app.models import BaseModel
-from app import bcrypt
 
 class User(BaseModel):
     def __init__(self, first_name, last_name, email, password=None):
@@ -35,9 +34,11 @@ class User(BaseModel):
         }
 
     def hash_password(self, password):
+        from app import bcrypt
         """Hashes the password before storing it."""
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def verify_password(self, password):
+        from app import bcrypt
         """Verifies if the provided password matches the hashed password."""
         return bcrypt.check_password_hash(self.password, password)
