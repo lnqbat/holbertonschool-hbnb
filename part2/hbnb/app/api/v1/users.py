@@ -23,13 +23,14 @@ class UserList(Resource):
             return {'error': 'Email already registered'}, 400
 
         new_user = facade.create_user(user_data)
+        new_user.hash_password(user_data['password'])
         return {
             'id': new_user.id,
             'first_name': new_user.first_name,
             'last_name': new_user.last_name,
             'email': new_user.email
         }, 201
-
+ 
     @api.response(200, 'List of users retrieved successfully')
     def get(self):
         """ Get a list of all users """
