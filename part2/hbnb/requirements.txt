@@ -46,3 +46,4 @@ wheel==0.42.0
 zombie-imp==0.0.2
 flask-restx
 flask-bcrypt
+flask-jwt-extended
