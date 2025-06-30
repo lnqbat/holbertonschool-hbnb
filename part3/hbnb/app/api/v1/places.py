@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services import facade
 from flask import request
 
@@ -33,6 +34,7 @@ class PlaceList(Resource):
     @api.expect(place_model)
     @api.response(201, 'Place successfully created')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def post(self):
         """ Register a new place """
         data = api.payload
@@ -64,6 +66,7 @@ class PlaceList(Resource):
 class PlaceResource(Resource):
     @api.response(200, 'Place details retrieved successfully')
     @api.response(404, 'Place not found')
+    @jwt_required()
     def get(self, place_id):
         """ Retrieve a place by ID """
         try:
