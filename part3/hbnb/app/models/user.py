@@ -2,7 +2,7 @@ import re
 from app.models import BaseModel
 
 class User(BaseModel):
-    def __init__(self, first_name, last_name, email, password=None):
+    def __init__(self, first_name, last_name, email, password=None, hashed=False):
         """
         Users class.
         """
@@ -18,9 +18,16 @@ class User(BaseModel):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
-        self.password = password
         self.is_admin = False
         self.places = []
+
+        if password:
+            if hashed:
+                self.password = password
+            else:
+                self.hash_password(password)
+        else:
+            self.password=None
 
     def _is_valid_email(self, email):
         regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
