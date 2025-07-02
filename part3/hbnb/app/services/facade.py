@@ -17,9 +17,10 @@ class HBnBFacade:
         user = User(
             first_name=user_data['first_name'],
             last_name=user_data['last_name'],
-            email=user_data['email']
+            email=user_data['email'],
+            password=user_data.get("password"),
+            hashed=user_data.get("hashed", False)
         )
-        user.hash_password(user_data['password'])
         self.user_repository.add(user)
         return user
 
