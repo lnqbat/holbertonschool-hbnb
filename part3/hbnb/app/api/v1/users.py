@@ -15,23 +15,27 @@ user_model = api.model('User', {
 
 @api.route('/')
 class UserList(Resource):
-    @jwt_required()
     @api.response(200, 'List of users retrieved successfully', [user_model])
     @api.response(403, 'Admin privileges required')
     def get(self):
-        """ List all users (admin only) """
-        claims = get_jwt()
-        if not claims.get('is_admin'):
-            return {'error': 'Admin privileges required'}, 403
+        """ List all users """
         users = facade.get_all_users()
-        return [user.to_dict() for user in users], 200
+        return [
+            {
+                'id': user.id,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email
+            } for user in users
+        ], 200
 
+    @jwt_required()
     @api.expect(user_model, validate=True)
     @api.response(201, 'User successfully created', user_model)
     @api.response(400, 'Email already registered')
     @api.response(403, 'Admin privileges required')
     def post(self):
-        """ Create a new user (admin only after first user) """
+        """ Create a new user """
         user_data = request.get_json()
         email = user_data.get('email')
         if facade.get_user_by_email(email):
@@ -53,12 +57,11 @@ class UserList(Resource):
 
 @api.route('/<user_id>')
 class UserResource(Resource):
-    @jwt_required()
     @api.response(200, 'User details retrieved')
     @api.response(403, 'Not authorized')
     @api.response(404, 'User not found')
     def get(self, user_id):
-        """ Retrieve user by ID (self or admin) """
+        """ Retrieve user by ID """
         claims = get_jwt()
         current_user = get_jwt_identity()
 
@@ -77,7 +80,7 @@ class UserResource(Resource):
     @api.response(404, 'User not found')
     @api.response(400, 'Invalid or duplicate email')
     def put(self, user_id):
-        """ Update user (self or admin) """
+        """ Update user """
         claims = get_jwt()
         current_user = get_jwt_identity()
 
