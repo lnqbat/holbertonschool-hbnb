@@ -3,7 +3,7 @@ from flask import request
 from flask_jwt_extended import jwt_required, get_jwt, verify_jwt_in_request, get_jwt_identity
 from app.services import facade
 
-api = Namespace('users', description='User operations')
+api = Namespace('admin', description='Admin operations')
 
 user_model = api.model('User', {
     'first_name': fields.String(required=True, description='First name of the user'),
