@@ -12,6 +12,7 @@ amenity_model = api.model('Amenity', {
 
 @api.route('/')
 class AmenityList(Resource):
+    @api.doc(security='Bearer Auth')
     @api.expect(amenity_model)
     @api.response(201, 'Amenity successfully created')
     @api.response(400, 'Invalid input data')
@@ -47,6 +48,7 @@ class AmenityResource(Resource):
             return {'message': 'Amenity not found'}, 404
         return {'id': amenity.id, 'name': amenity.name}, 200
 
+    @api.doc(security='Bearer Auth')
     @api.expect(amenity_model, validate=True)
     @api.response(404, 'Amenity not found')
     @api.response(400, 'Invalid input data')
