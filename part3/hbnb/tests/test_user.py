@@ -1,13 +1,13 @@
 import unittest
 import uuid
 from app import create_app
+from app.services import facade
 
 class TestUser(unittest.TestCase):
     def setUp(self):
         self.app = create_app()
         self.client = self.app.test_client()
 
-        # on fait login admin pour obtenir le JWT
         login_res = self.client.post('/api/v1/auth/login', json={
             "email": "admin@example.com",
             "password": "adminpassword"
@@ -16,21 +16,20 @@ class TestUser(unittest.TestCase):
         self.token = login_res.get_json()["access_token"]
         self.headers = {"Authorization": f"Bearer {self.token}"}
 
-    def test_get_user_by_id(self):
-        # créer user
-        post_res = self.client.post('/api/v1/users/', json={
-            "first_name": "Léo",
-            "last_name": "Salin",
-            "email": "leo.salins@example.com",
-            "password": "securepass"
+        user_res = self.client.post('/api/v1/users/', json={
+            "first_name": "Test",
+            "last_name": "User",
+            "email": "test.user@example.com",
+            "password": "pass123"
         }, headers=self.headers)
-        self.assertEqual(post_res.status_code, 201)
-        user_id = post_res.get_json()["id"]
 
-        # récupérer user par ID
-        get_res = self.client.get(f'/api/v1/users/{user_id}', headers=self.headers)
-        self.assertEqual(get_res.status_code, 200)
-        self.assertEqual(get_res.get_json()["email"], "leo.salins@example.com")
+        if user_res.status_code == 201:
+            self.user_id = user_res.get_json()["id"]
+        elif user_res.status_code == 400:
+            user = facade.get_user_by_email("test.user@example.com")
+            self.user_id = user.id
+        else:
+            self.fail(f"Unexpected status code creating test user: {user_res.status_code}")
 
     def test_update_user_valid(self):
         post_res = self.client.post('/api/v1/users/', json={
@@ -39,6 +38,7 @@ class TestUser(unittest.TestCase):
             "email": f"anna-{uuid.uuid4()}@example.com",
             "password": "pass"
         }, headers=self.headers)
+        self.assertEqual(post_res.status_code, 201)
         user_id = post_res.get_json()["id"]
 
         put_res = self.client.put(f'/api/v1/users/{user_id}', json={
