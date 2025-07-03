@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 from flask_restx import Api
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
@@ -10,12 +11,13 @@ from app.api.v1.auth import api as auth_ns
 
 bcrypt = Bcrypt()
 jwt = JWTManager()
+db = SQLAlchemy()
 
 def create_app(config_class="config.DevelopmentConfig"):
     app= Flask(__name__)
     app.config.from_object(config_class)
     jwt.init_app(app)
-
+    db.init_app(app)
     bcrypt.init_app(app)
 
     authorizations = {
