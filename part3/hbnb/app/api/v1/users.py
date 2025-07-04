@@ -30,12 +30,8 @@ class UserProfile(Resource):
     @api.response(200, 'User retrieved successfully')
     @api.response(403, 'Not authorized')
     @api.response(404, 'User not found')
-    @jwt_required()
     def get(self, user_id):
         """Retrieve own profile"""
-        identity = get_jwt_identity()
-        if identity != user_id:
-            return {"error": "Not authorized"}, 403
         user = facade.get_user(user_id)
         if not user:
             return {"error": "User not found"}, 404
