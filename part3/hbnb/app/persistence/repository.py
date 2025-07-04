@@ -1,4 +1,3 @@
-from app import db
 from abc import ABC, abstractmethod
 
 class Repository(ABC):
@@ -25,6 +24,7 @@ class Repository(ABC):
     @abstractmethod
     def get_by_attribute(self, attr_name, attr_value):
         pass
+
 
 class InMemoryRepository(Repository):
     def __init__(self):
@@ -61,15 +61,18 @@ class InMemoryRepository(Repository):
     def get_by_attribute(self, attr_name, attr_value):
         return next((obj for obj in self._storage.values() if getattr(obj, attr_name) == attr_value), None)
 
+
 class AmenityRepository(InMemoryRepository):
     def __init__(self):
         super().__init__()
+
 
 class SQLAlchemyRepository(Repository):
     def __init__(self, model):
         self.model = model
 
     def add(self, obj):
+        from app import db
         db.session.add(obj)
         db.session.commit()
 
@@ -80,6 +83,7 @@ class SQLAlchemyRepository(Repository):
         return self.model.query.all()
 
     def update(self, obj_id, data):
+        from app import db
         obj = self.get(obj_id)
         if obj:
             for key, value in data.items():
@@ -87,6 +91,7 @@ class SQLAlchemyRepository(Repository):
             db.session.commit()
 
     def delete(self, obj_id):
+        from app import db
         obj = self.get(obj_id)
         if obj:
             db.session.delete(obj)
