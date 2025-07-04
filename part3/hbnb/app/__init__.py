@@ -8,10 +8,29 @@ from app.api.v1.amenities import api as amenities_ns
 from app.api.v1.places import api as place_ns
 from app.api.v1.reviews import api as reviews_ns
 from app.api.v1.auth import api as auth_ns
+from app.api.v1.admin import api as admin_users
 
 bcrypt = Bcrypt()
 jwt = JWTManager()
 db = SQLAlchemy()
+
+def seed_users():
+        from app.services import facade
+        email = "admin@example.com"
+        user = facade.get_user_by_email(email)
+        if not user:
+            hashed_pw = bcrypt.generate_password_hash("adminpassword").decode("utf-8")
+            user = facade.create_user({
+                "first_name": "Admin",
+                "last_name": "Root",
+                "email": email,
+                "password": hashed_pw,
+                "hashed": True
+            })
+            user.is_admin = True
+            print(f"Seeded user: {user.email}")
+        else:
+            print(f"User already exists: {user.email}")
 
 def create_app(config_class="config.DevelopmentConfig"):
     app= Flask(__name__)
@@ -43,5 +62,7 @@ def create_app(config_class="config.DevelopmentConfig"):
     api.add_namespace(place_ns, path="/api/v1/places")
     api.add_namespace(reviews_ns, path="/api/v1/reviews")
     api.add_namespace(auth_ns, path="/api/v1/auth")
+    api.add_namespace(admin_users, path="/api/v1/admin/users")
 
+    seed_users()
     return app
