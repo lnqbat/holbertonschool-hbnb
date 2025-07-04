@@ -68,6 +68,7 @@ def seed_users():
             "hashed": True
         })
         user.is_admin = True
+        db.session.commit()
         print(f"Seeded user: {user.email}")
     else:
         print(f"User already exists: {user.email}")
