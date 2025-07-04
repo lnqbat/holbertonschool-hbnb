@@ -1,4 +1,5 @@
-from app.persistence.repository import SQLAlchemyRepository
+from app.persistence.UserRepository import UserRepository
+from app.persistence.repository import AmenityRepository, SQLAlchemyRepository
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
@@ -6,13 +7,12 @@ from app.models.review import Review
 
 class HBnBFacade:
     def __init__(self, user_repository=None, place_repository=None, review_repository=None, amenity_repository=None):
-        self.user_repository = SQLAlchemyRepository(User)
-        self.place_repository = place_repository
-        self.review_repository = review_repository
-        self.amenity_repository = amenity_repository
-        self.store = {}
-        self.reviews = {} 
+        self.user_repository = user_repository or UserRepository()
+        self.place_repository = place_repository or SQLAlchemyRepository(Place)
+        self.review_repository = review_repository or SQLAlchemyRepository(Review)
+        self.amenity_repository = amenity_repository or SQLAlchemyRepository(Amenity)
 
+# Users
     def create_user(self, user_data):
         user = User(
             first_name=user_data['first_name'],
@@ -25,42 +25,26 @@ class HBnBFacade:
         self.user_repository.add(user)
         return user
 
-    def get_by_id(self, entity_id):
-        return self.store.get(str(entity_id))
-
     def get_user(self, user_id):
         return self.user_repository.get(user_id)
 
     def get_user_by_email(self, email):
-        return self.user_repository.get_by_attribute('email', email)
+        return self.user_repository.get_user_by_email(email)
 
     def update_user(self, user_id, update_data):
-        user = self.user_repository.get(user_id)
-        if not user:
-            return None
-        for key, value in update_data.items():
-            if hasattr(user, key):
-                setattr(user, key, value)
-        return user
+        return self.user_repository.update(user_id, update_data)
 
     def get_all_users(self):
         return self.user_repository.get_all()
 
-    def get_by_id(self, entity_id):
-        entity_id = str(entity_id)
-        if entity_id in self.store:
-            return self.store[entity_id]
-        return None
-
     def delete_user(self, user_id):
-        if not self.user_repository.delete(user_id):
-            return False
-        return True
+        return self.user_repository.delete(user_id)
 
-    # Amenity methods
+# Amenity
     def create_amenity(self, data):
         amenity = Amenity(name=data['name'])
-        return self.amenity_repository.add(amenity)
+        self.amenity_repository.add(amenity)
+        return amenity
 
     def get_all_amenities(self):
         return self.amenity_repository.get_all()
@@ -72,13 +56,9 @@ class HBnBFacade:
         return self.amenity_repository.update(amenity_id, data)
 
     def delete_amenity(self, amenity_id):
-        amenity = self.get_amenity(amenity_id)
-        if not amenity:
-            return None
-        self.amenity_repository.delete(amenity_id)
-        return True
+        return self.amenity_repository.delete(amenity_id)
 
-    # Place methods
+# Place
     def create_place(self, place_data):
         price = place_data.get('price')
         latitude = place_data.get('latitude')
@@ -113,10 +93,8 @@ class HBnBFacade:
             description=place_data.get('description', "")
         )
         place.amenities = amenities
-
         self.place_repository.add(place)
         return place
-
 
     def get_place(self, place_id):
         place = self.place_repository.get(place_id)
@@ -154,41 +132,12 @@ class HBnBFacade:
 
         return self.place_repository.update(place_id, place_data)
 
-
+# Review
     def create_review(self, review_data):
-        user_id = review_data.get('user_id')
-        place_id = review_data.get('place_id')
-        rating = review_data.get('rating')
-
-        user = self.user_repository.get(user_id)
-        if not user:
-            raise ValueError("The specified user does not exist.")
-
-        place = self.place_repository.get(place_id)
-        if not place:
-            raise ValueError("The specified place does not exist.")
-
-        if rating is None or not (0 <= rating <= 5):
-            raise ValueError("Rating must be between 0 and 5.")
-
-        review = Review(
-            text=review_data.get('text'),
-            rating=rating,
-            user=user,
-            place=place
-        )
-
-        self.review_repository.add(review)
-        return review
-
-    def create_review(self, review_data):
-        user_id = review_data.get('user_id')
-        place_id = review_data.get('place_id')
+        user = self.user_repository.get(review_data.get('user_id'))
+        place = self.place_repository.get(review_data.get('place_id'))
         rating = review_data.get('rating')
         text = review_data.get('text')
-
-        user = self.user_repository.get(user_id)
-        place = self.place_repository.get(place_id)
 
         if not user:
             raise ValueError("The specified user does not exist.")
@@ -198,35 +147,28 @@ class HBnBFacade:
             raise ValueError("Rating must be between 0 and 5.")
 
         review = Review(text=text, rating=rating, user=user, place=place)
-        self.reviews[review.id] = review
+        self.review_repository.add(review)
         return review
 
     def get_review(self, review_id):
-        review = self.reviews.get(review_id)
+        review = self.review_repository.get(review_id)
         if not review:
             raise ValueError("Review not found.")
         return review
 
     def get_all_reviews(self):
-        return list(self.reviews.values())
+        return self.review_repository.get_all()
 
     def get_reviews_by_place(self, place_id):
-        if not self.place_repository.get(place_id):
+        place = self.place_repository.get(place_id)
+        if not place:
             raise ValueError("Place not found.")
-        return [r for r in self.reviews.values() if r.place.id == place_id]
+        return place.reviews
 
     def update_review(self, review_id, data):
-        review = self.get_review(review_id)
-        if 'text' in data:
-            review.text = data['text']
-        if 'rating' in data:
-            rating = data['rating']
-            if not (0 <= rating <= 5):
-                raise ValueError("Rating must be between 0 and 5.")
-            review.rating = rating
-        return review
+        if 'rating' in data and not (0 <= data['rating'] <= 5):
+            raise ValueError("Rating must be between 0 and 5.")
+        return self.review_repository.update(review_id, data)
 
     def delete_review(self, review_id):
-        if review_id not in self.reviews:
-            raise ValueError("Review not found.")
-        del self.reviews[review_id]
+        return self.review_repository.delete(review_id)
