@@ -1,30 +1,36 @@
+from app import db
 import uuid
 from datetime import datetime
 
-class BaseModel:
+class BaseModel(db.Model):
     """
-    Initializes a unique identifier.
+    Abstract base
     """
-    def __init__(self):
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+    __abstract__ = True
+
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def save(self):
         """
-        Updates attribute with the current time.
+        Commit this object to the database.
         """
-        self.updated_at = datetime.now()
+        db.session.add(self)
+        db.session.commit()
 
     def update(self, data):
         """
-        Updates existing attributes.
+        Updates existing attributes and commits.
         """
         for key, value in data.items():
             if hasattr(self, key):
                 setattr(self, key, value)
+        self.updated_at = datetime.utcnow()
         self.save()
 
     def to_dict(self):
-        result = self.__dict__.copy()
-        return result
+        """
+        Returns a dict representation
+        """
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
