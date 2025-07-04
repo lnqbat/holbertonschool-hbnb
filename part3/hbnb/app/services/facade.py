@@ -6,10 +6,11 @@ from app.models.review import Review
 
 class HBnBFacade:
     def __init__(self, user_repository=None, place_repository=None, review_repository=None, amenity_repository=None):
-        self.user_repository = user_repository
+        self.user_repository = SQLAlchemyRepository(User)
         self.place_repository = place_repository
         self.review_repository = review_repository
         self.amenity_repository = amenity_repository
+        self.store = {}
         self.reviews = {} 
 
     def create_user(self, user_data):
@@ -20,8 +21,12 @@ class HBnBFacade:
             password=user_data.get("password"),
             hashed=user_data.get("hashed", False)
         )
+        user.is_admin = user_data.get("is_admin", False)
         self.user_repository.add(user)
         return user
+
+    def get_by_id(self, entity_id):
+        return self.store.get(str(entity_id))
 
     def get_user(self, user_id):
         return self.user_repository.get(user_id)
@@ -40,6 +45,17 @@ class HBnBFacade:
 
     def get_all_users(self):
         return self.user_repository.get_all()
+
+    def get_by_id(self, entity_id):
+        entity_id = str(entity_id)
+        if entity_id in self.store:
+            return self.store[entity_id]
+        return None
+
+    def delete_user(self, user_id):
+        if not self.user_repository.delete(user_id):
+            return False
+        return True
 
     # Amenity methods
     def create_amenity(self, data):
