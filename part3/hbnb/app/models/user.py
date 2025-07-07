@@ -11,9 +11,11 @@ class User(BaseModel):
     password = db.Column(db.String(128), nullable=True)
     is_admin = db.Column(db.Boolean, default=False)
 
+    places = db.relationship('Place', backref='owner', lazy=True)
+    reviews = db.relationship('Review', backref='user', lazy=True)
+
     def __init__(self, first_name, last_name, email, password=None, hashed=False):
         super().__init__()
-
         if not first_name or len(first_name) > 50:
             raise ValueError("Invalid first_name")
         if not last_name or len(last_name) > 50:

@@ -1,12 +1,27 @@
+from app import db
 from app.models import BaseModel
 
-class Place(BaseModel):
-    def __init__(self, title, price, latitude, longitude, owner, description=""):
-        """
-        Place class, which inherits from BaseModel.
-        """
-        super().__init__()
+place_amenity = db.Table('place_amenity',
+    db.Column('place_id', db.Integer, db.ForeignKey('places.id'), primary_key=True),
+    db.Column('amenity_id', db.Integer, db.ForeignKey('amenities.id'), primary_key=True)
+)
 
+class Place(BaseModel):
+    __tablename__ = 'places'
+
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    price = db.Column(db.Float, nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    reviews = db.relationship('Review', backref='place', lazy=True)
+    amenities = db.relationship('Amenity', secondary='place_amenity', back_populates='places')
+
+    def __init__(self, title, price, latitude, longitude, owner, description=""):
+        super().__init__()
         if not title or len(title) > 100:
             raise ValueError("Invalid title")
         if price < 0:
