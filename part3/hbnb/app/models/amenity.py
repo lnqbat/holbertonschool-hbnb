@@ -18,3 +18,4 @@ class Amenity(BaseModel):
             "id": self.id,
             "name": self.name
         }
+ 
