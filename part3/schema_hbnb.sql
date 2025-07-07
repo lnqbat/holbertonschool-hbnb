@@ -48,7 +48,8 @@ INSERT INTO users (id, first_name, last_name, email, password, is_admin) VALUES 
     'Admin', 
     'HBnB', 
     'admin@hbnb.io', 
-    '',
+    '$2b$12$GCEIKKxi1dGaJxYBPgg39ORc2SfvenCp4UYuZ6GgOBPgPegfgOnZu
+',
 );
 
 INSERT INTO amenities (id, name) VALUES
