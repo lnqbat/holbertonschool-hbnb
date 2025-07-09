@@ -1,6 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from flask import request
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from app.services import facade
 
 api = Namespace('users', description='User operations')
@@ -43,11 +43,15 @@ class UserProfile(Resource):
     @api.response(404, 'User not found')
     @jwt_required()
     def put(self, user_id):
-        """Update own profile"""
+        """Update own profile or admin update"""
         identity = get_jwt_identity()
-        if identity != user_id:
+        claims = get_jwt()
+        if identity != user_id and not claims.get("is_admin"):
             return {"error": "Not authorized"}, 403
-        user = facade.update_user(user_id, api.payload)
+        try:
+            user = facade.update_user(user_id, api.payload)
+        except ValueError as e:
+            return {"error": str(e)}, 400
         if not user:
             return {"error": "User not found"}, 404
         return user.to_dict(), 200
@@ -57,9 +61,10 @@ class UserProfile(Resource):
     @api.response(404, 'User not found')
     @jwt_required()
     def delete(self, user_id):
-        """Delete own profile"""
+        """Delete own profile or admin delete"""
         identity = get_jwt_identity()
-        if identity != user_id:
+        claims = get_jwt()
+        if identity != user_id and not claims.get("is_admin"):
             return {"error": "Not authorized"}, 403
         try:
             facade.delete_user(user_id)
