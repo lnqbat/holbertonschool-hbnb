@@ -25,5 +25,4 @@ class Review(BaseModel):
             'id': self.id,
             'text': self.text,
             'rating': self.rating,
-            'created_at': self.created_at.isoformat() if hasattr(self, 'created_at') else None
         }
