@@ -125,3 +125,26 @@ class PlaceResource(Resource):
             return {'error': str(e)}, 404
         except Exception as e:
             return {'error': str(e)}, 400
+
+    @api.response(200, 'Place deleted successfully')
+    @api.response(404, 'Place not found')
+    @api.response(403, 'Unauthorized action')
+    @jwt_required()
+    def delete(self, place_id):
+        """ Delete place (admin bypass ownership) """
+        claims = get_jwt()
+        is_admin = claims.get('is_admin', False)
+        user_id = get_jwt_identity()
+
+        try:
+            place = facade.get_place(place_id)
+            if not is_admin and str(place.owner_id) != str(user_id):
+                return {'error': 'Unauthorized action'}, 403
+
+            facade.delete_place(place_id)
+            return {"message": "Place deleted successfully"}, 200
+
+        except ValueError as e:
+            return {'error': str(e)}, 404
+        except Exception as e:
+            return {'error': str(e)}, 400
