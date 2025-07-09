@@ -14,7 +14,7 @@ class User(BaseModel):
     places = db.relationship('Place', back_populates='owner', cascade='all, delete')
     reviews = db.relationship('Review', backref='user', lazy=True)
 
-    def __init__(self, first_name, last_name, email, password=None, hashed=False):
+    def __init__(self, first_name, last_name, email, password=None, hashed=False, is_admin=False):
         super().__init__()
         if not first_name or len(first_name) > 50:
             raise ValueError("Invalid first_name")
@@ -26,7 +26,7 @@ class User(BaseModel):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
-        self.is_admin = False
+        self.is_admin = is_admin
 
         if password:
             if hashed:
