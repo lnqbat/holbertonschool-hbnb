@@ -32,7 +32,7 @@ class ReviewList(Resource):
     def get(self):
         """ Retrieve all review """
         reviews = facade.get_all_reviews()
-        return [r.to_dict_get() for r in reviews], 200
+        return [r.to_dict() for r in reviews], 200
 
 
 @api.route('/<string:review_id>')
@@ -79,6 +79,6 @@ class PlaceReviewList(Resource):
         """ Retrieve a review by place ID """
         try:
             reviews = facade.get_reviews_by_place(place_id)
-            return [r.to_dict_get() for r in reviews], 200
+            return [r.to_dict() for r in reviews], 200
         except ValueError as e:
             api.abort(404, str(e))
