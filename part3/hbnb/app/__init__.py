@@ -49,26 +49,31 @@ def create_app(config_class="config.DevelopmentConfig"):
     api.add_namespace(admin_users, path="/api/v1/admin/users")
 
     with app.app_context():
-        seed_users()
+        db.create_all()
+
+        from app.models.user import User
+        admin = User.query.filter_by(email="admin@hbnb.io").first()
+        if not admin:
+            hashed_pw = bcrypt.generate_password_hash("admin1234").decode()
+            admin = User(
+                first_name="Admin",
+                last_name="HBnB",
+                email="admin@hbnb.io",
+                password=hashed_pw,
+                is_admin=True,
+                hashed=True
+            )
+            db.session.add(admin)
+            db.session.commit()
+        else:
+            changed = False
+            if not admin.is_admin:
+                admin.is_admin = True
+                changed = True
+            if not admin.verify_password("admin1234"):
+                admin.hash_password("admin1234")
+                changed = True
+            if changed:
+                db.session.commit()
 
     return app
-
-
-def seed_users():
-    from app.services import facade
-    email = "admin@example.com"
-    user = facade.get_user_by_email(email)
-    if not user:
-        hashed_pw = bcrypt.generate_password_hash("adminpassword").decode("utf-8")
-        user = facade.create_user({
-            "first_name": "Admin",
-            "last_name": "Root",
-            "email": email,
-            "password": hashed_pw,
-            "hashed": True
-        })
-        user.is_admin = True
-        db.session.commit()
-        print(f"Seeded user: {user.email}")
-    else:
-        print(f"User already exists: {user.email}")
