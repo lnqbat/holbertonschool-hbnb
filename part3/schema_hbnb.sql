@@ -42,13 +42,18 @@ CREATE TABLE place_amenity (
     FOREIGN KEY (amenity_id) REFERENCES amenities(id)
 );
 
-
-INSERT INTO "User" (id, first_name, last_name, email, password, is_admin)
+INSERT INTO users (id, first_name, last_name, email, password, is_admin)
 VALUES 
-('36c9050e-ddd3-4c3b-9731-9f487208bbc1', 'Admin', 'HBnB', 'admin@hbnb.io',
- '$2b$12$1m2epwOe16MN9tZp6GZ2vuqEEXyhb8H5i3R6rz86kJ83lmURylY7i', TRUE);
+(
+  '36c9050e-ddd3-4c3b-9731-9f487208bbc1',
+  'Admin',
+  'HBnB',
+  'admin@hbnb.io',
+  '$2b$12$1m2epwOe16MN9tZp6GZ2vuqEEXyhb8H5i3R6rz86kJ83lmURylY7i',
+  TRUE
+);
 
-INSERT INTO Amenity (id, name)
+INSERT INTO amenities (id, name)
 VALUES 
 ('7cf1b8e7-3e77-41ad-96d1-8d8fa1a3f9a1', 'WiFi'),
 ('5ba91e3e-74b6-414c-bb83-1827c56a0c71', 'Swimming Pool'),
