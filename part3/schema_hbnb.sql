@@ -43,15 +43,13 @@ CREATE TABLE place_amenity (
 );
 
 
-INSERT INTO users (id, first_name, last_name, email, password, is_admin) VALUES (
-    '36c9050e-ddd3-4c3b-9731-9f487208bbc1', 
-    'Admin', 
-    'HBnB', 
-    'admin@hbnb.io', 
-    '$2b$12$GCEIKKxi1dGaJxYBPgg39ORc2SfvenCp4UYuZ6GgOBPgPegfgOnZu',
-);
+INSERT INTO "User" (id, first_name, last_name, email, password, is_admin)
+VALUES 
+('36c9050e-ddd3-4c3b-9731-9f487208bbc1', 'Admin', 'HBnB', 'admin@hbnb.io',
+ '$2b$12$1m2epwOe16MN9tZp6GZ2vuqEEXyhb8H5i3R6rz86kJ83lmURylY7i', TRUE);
 
-INSERT INTO amenities (id, name) VALUES
-('f14fb2ac-3b42-4ac5-8270-564ed4523d0a', 'WiFi'),
-('96eaad60-348e-412a-842b-9c18bb7c2f7e', 'Swimming Pool'),
-('64ae9d88-6fbd-41d4-b21c-9eb9e994a94d', 'Air Conditioning');
+INSERT INTO Amenity (id, name)
+VALUES 
+('7cf1b8e7-3e77-41ad-96d1-8d8fa1a3f9a1', 'WiFi'),
+('5ba91e3e-74b6-414c-bb83-1827c56a0c71', 'Swimming Pool'),
+('3dd05af1-30a2-4c1d-9b25-5283e1ee6f89', 'Air Conditioning');
