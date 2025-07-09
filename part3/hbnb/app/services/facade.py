@@ -4,6 +4,7 @@ from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
 from app.models.review import Review
+from app import db
 
 class HBnBFacade:
     def __init__(self, user_repository=None, place_repository=None, review_repository=None, amenity_repository=None):
@@ -30,10 +31,31 @@ class HBnBFacade:
 
     def get_user_by_email(self, email):
         return self.user_repository.get_user_by_email(email)
-
+    
     def update_user(self, user_id, update_data):
-        return self.user_repository.update(user_id, update_data)
+        return self.update(user_id, update_data)
 
+    def update(self, user_id, update_data):
+        user = self.get_user(user_id)
+        if not user:
+            return None
+
+        if "email" in update_data:
+            new_email = update_data["email"]
+            existing_user = self.user_repository.get_user_by_email(new_email)
+            if existing_user and existing_user.id != user.id:
+                raise ValueError("Email already registered to another user")
+
+        for key, value in update_data.items():
+            if hasattr(user, key):
+                if key == "password":
+                    user.hash_password(value)
+                else:
+                    setattr(user, key, value)
+
+        db.session.commit()
+        return user
+    
     def get_all_users(self):
         return self.user_repository.get_all()
 
