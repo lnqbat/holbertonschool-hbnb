@@ -51,3 +51,20 @@ class UserProfile(Resource):
         if not user:
             return {"error": "User not found"}, 404
         return user.to_dict(), 200
+
+    @api.response(200, 'User deleted successfully')
+    @api.response(403, 'Not authorized')
+    @api.response(404, 'User not found')
+    @jwt_required()
+    def delete(self, user_id):
+        """Delete own profile"""
+        identity = get_jwt_identity()
+        if identity != user_id:
+            return {"error": "Not authorized"}, 403
+        try:
+            facade.delete_user(user_id)
+            return {"message": "User deleted successfully"}, 200
+        except ValueError as e:
+            return {"error": str(e)}, 404
+        except Exception as e:
+            return {"error": str(e)}, 400
