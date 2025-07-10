@@ -1,62 +1,54 @@
-# 🏡 Holberton BnB – Partie 3 : API, Authentification & Base de Données
+# 🏡 HBnB API – Part 3
 
-Bienvenue dans **HBnB – Part 3**, un projet Fullstack inspiré d'Airbnb, axé sur le **développement backend**.  
-Cette étape vous fait passer d’une logique en mémoire à une application web RESTful complète, sécurisée, persistante et scalable.
-
----
-
-## 📌 Sommaire
-
-- [🔧 Objectifs](#-objectifs)
-- [⚙️ Stack Technique](#️-stack-technique)
-- [🧠 Concepts Clés](#-concepts-clés)
-- [📐 Modèle de Données (ER Diagramme)](#-modèle-de-données-er-diagramme)
-- [🔐 Authentification](#-authentification)
-- [🛣️ API Endpoints](#️-api-endpoints)
-- [🚀 Lancer l'application](#-lancer-lapplication)
-- [📂 Structure du Projet](#-structure-du-projet)
-- [📚 Ressources](#-ressources)
-- [👨‍💻 Auteur](#-auteur)
+A RESTful API for a simplified Airbnb-style platform, supporting secure user management, place listings, reviews, amenities, and admin features. Built using Flask, SQLAlchemy, and JWT.
 
 ---
 
-## 🔧 Objectifs
+## 📌 Table of Contents
 
-- Implémenter une API REST conforme aux standards.
-- Gérer les utilisateurs, droits d’accès et authentification via JWT.
-- Hash sécurisé des mots de passe avec `bcrypt`.
-- Mapper les entités avec SQLAlchemy.
-- Établir des **relations complexes** : one-to-many, many-to-many.
-- Générer un **diagramme ER Mermaid.js**.
-
----
-
-## ⚙️ Stack Technique
-
-| Technologie       | Usage                           |
-|------------------|----------------------------------|
-| **Python**       | Langage principal                |
-| **Flask**        | Framework Web/API                |
-| **Flask-RESTX**  | Documentation Swagger intégrée   |
-| **Flask-Bcrypt** | Hash des mots de passe           |
-| **Flask-JWT-Extended** | Authentification JWT     |
-| **Flask-SQLAlchemy** | ORM pour SQLite/PostgreSQL |
-| **Mermaid.js**   | Diagrammes ER markdown           |
-| **UUID**         | Identifiants uniques             |
+- [🔧 Objectives](#-objectives)
+- [⚙️ Tech Stack](#️-tech-stack)
+- [🔐 Authentication & Security](#-authentication--security)
+- [📐 Data Model (ER Diagram)](#-data-model-er-diagram)
+- [👨‍💻 Authors](#-authors)
 
 ---
 
-## 🧠 Concepts Clés
+## 🔧 Objectives
 
-- 🔒 **JWT Auth** : sécurisation des endpoints.
-- 👥 **RBAC** : contrôle d'accès par rôle (`user` / `admin`).
-- 🧱 **Repository Pattern** : découplage entre logique métier et stockage.
-- 🧩 **ORM** : mapping des entités vers des tables relationnelles.
-- 🔄 **CRUD REST** : gestion complète des ressources.
+✅ Secure user registration & login  
+✅ Password hashing with bcrypt  
+✅ JWT-based authentication  
+✅ Admin role with special access  
+✅ Full CRUD for Places, Reviews, Amenities  
+✅ SQLAlchemy models and repositories  
+✅ Raw SQL schema & seed data  
+✅ Entity relationship diagram with Mermaid.js  
 
 ---
 
-## 📐 Modèle de Données (ER Diagramme)
+## ⚙️ Tech Stack
+
+- Python 3.10  
+- Flask + Flask-RESTX  
+- Flask-JWT-Extended  
+- Flask-Bcrypt  
+- SQLAlchemy + Flask-SQLAlchemy  
+- SQLite (dev) / PostgreSQL (prod)  
+- Mermaid.js for ER diagram  
+
+---
+
+## 🔐 Authentication & Security
+
+- Passwords are hashed using **bcrypt**  
+- Auth is done with **JWT tokens** in headers  
+- Admins can manage users, amenities, and override ownership rules  
+- Users can only update their own data and create one review per place
+
+---
+
+## 📐 Data Model (ER Diagram)
 
 ```mermaid
 ---
@@ -98,6 +90,10 @@ erDiagram
     }
     USER ||--o{ PLACE : owns
     USER ||--o{ REVIEW : writes
-    PLACE ||--o{ REVIEW : receives
-    PLACE ||--o{ PLACE_AMENITY : has
-    AMENITY ||--o{ PLACE_AMENITY : contains
+    PLACE ||--o{ REVIEW : has
+    PLACE ||--o{ PLACE_AMENITY : links
+    AMENITY ||--o{ PLACE_AMENITY : links
+
+## Authors 💻
+
+@Inqbat & @Iyed13tns
