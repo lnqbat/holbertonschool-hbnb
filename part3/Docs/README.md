@@ -96,4 +96,4 @@ erDiagram
 
 ## Authors 💻
 
-@Inqbat & @Iyed13tns
+[@Iyed13tns](https://www.github.com/Iyed13tns) & [@Inqbat](https://www.github.com/Inqbat)
