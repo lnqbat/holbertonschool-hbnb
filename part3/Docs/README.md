@@ -94,6 +94,7 @@ erDiagram
     PLACE ||--o{ PLACE_AMENITY : links
     AMENITY ||--o{ PLACE_AMENITY : links
 
+
 ## Authors 💻
 
 [@Iyed13tns](https://www.github.com/Iyed13tns) & [@Inqbat](https://www.github.com/Inqbat)
