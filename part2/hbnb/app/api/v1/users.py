@@ -14,6 +14,7 @@ class UserList(Resource):
     @api.expect(user_model, validate=True)
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered')
+    @api.response(400, 'Invalid input data')
     def post(self):
         """ Register a new user """
         user_data = api.payload
@@ -22,13 +23,14 @@ class UserList(Resource):
             return {'error': 'Email already registered'}, 400
 
         new_user = facade.create_user(user_data)
+        new_user.hash_password(user_data['password'])
         return {
             'id': new_user.id,
             'first_name': new_user.first_name,
             'last_name': new_user.last_name,
             'email': new_user.email
         }, 201
-
+ 
     @api.response(200, 'List of users retrieved successfully')
     def get(self):
         """ Get a list of all users """
@@ -61,6 +63,7 @@ class UserResource(Resource):
     @api.expect(user_model, validate=True)
     @api.response(200, 'User successfully updated')
     @api.response(404, 'User not found')
+    @api.response(400, 'Invalid input data')
     def put(self, user_id):
         """ Update user """
         update_data = api.payload

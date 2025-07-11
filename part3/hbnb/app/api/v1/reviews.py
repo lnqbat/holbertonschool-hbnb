@@ -1,6 +1,7 @@
 from flask import request
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 api = Namespace('reviews', description='Review operations')
 
@@ -14,6 +15,7 @@ review_model = api.model('Review', {
 
 @api.route('/')
 class ReviewList(Resource):
+    @jwt_required()
     @api.expect(review_model)
     @api.response(201, 'Review successfully created')
     @api.response(400, 'Invalid input data')
@@ -30,7 +32,7 @@ class ReviewList(Resource):
     def get(self):
         """ Retrieve all review """
         reviews = facade.get_all_reviews()
-        return [r.to_dict_get() for r in reviews], 200
+        return [r.to_dict() for r in reviews], 200
 
 
 @api.route('/<string:review_id>')
@@ -77,6 +79,6 @@ class PlaceReviewList(Resource):
         """ Retrieve a review by place ID """
         try:
             reviews = facade.get_reviews_by_place(place_id)
-            return [r.to_dict_get() for r in reviews], 200
+            return [r.to_dict() for r in reviews], 200
         except ValueError as e:
             api.abort(404, str(e))
