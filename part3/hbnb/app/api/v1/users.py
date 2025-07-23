@@ -39,7 +39,8 @@ class UserProfile(Resource):
 
     @api.expect(user_model, validate=True)
     @api.response(200, 'Profile updated successfully')
-    @api.response(403, 'Not authorized')
+    @api.response(403, 'Unauthorized action')
+    @api.response(400, 'You cannot modify email or password')
     @api.response(404, 'User not found')
     @jwt_required()
     def put(self, user_id):
@@ -47,9 +48,14 @@ class UserProfile(Resource):
         identity = get_jwt_identity()
         claims = get_jwt()
         if identity != user_id and not claims.get("is_admin"):
-            return {"error": "Not authorized"}, 403
+            return {"error": "Unauthorized action"}, 403
+
+        payload = api.payload or {}
+        if "email" in payload or "password" in payload:
+            return {"error": "You cannot modify email or password"}, 400
+
         try:
-            user = facade.update_user(user_id, api.payload)
+            user = facade.update_user(user_id, payload)
         except ValueError as e:
             return {"error": str(e)}, 400
         if not user:
