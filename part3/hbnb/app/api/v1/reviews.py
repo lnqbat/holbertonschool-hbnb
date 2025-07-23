@@ -1,7 +1,7 @@
 from flask import request
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 
 api = Namespace('reviews', description='Review operations')
 
@@ -20,13 +20,25 @@ class ReviewList(Resource):
     @api.response(201, 'Review successfully created')
     @api.response(400, 'Invalid input data')
     def post(self):
-        """ Register a new Review """
+        identity = get_jwt_identity()
         data = request.json
+
+        place = facade.get_place(data.get("place_id"))
+        if not place:
+            return {"error": "Place not found"}, 404
+        if place.owner_id == identity:
+            return {"error": "You cannot review your own place"}, 400
+
+        already_reviewed = facade.get_review_by_user_and_place(identity, data.get("place_id"))
+        if already_reviewed:
+            return {"error": "You have already reviewed this place"}, 400
+
+        data["user_id"] = identity
         try:
             review = facade.create_review(data)
             return review.to_dict(), 201
         except ValueError as e:
-            api.abort(400, str(e))
+            return {"error": str(e)}, 400
 
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
@@ -51,14 +63,24 @@ class ReviewResource(Resource):
     @api.response(200, 'Review updated successfully')
     @api.response(404, 'Review not found')
     @api.response(400, 'Invalid input data')
-    def put(self, review_id):
-        """ Update review """
-        data = request.json
+    def put(self, user_id):
+        identity = get_jwt_identity()
+        claims = get_jwt()
+
+        if identity != user_id and not claims.get("is_admin"):
+            return {"error": "Unauthorized action"}, 403
+
+        payload = api.payload or {}
+        if "email" in payload or "password" in payload:
+            return {"error": "You cannot modify email or password"}, 400
+
         try:
-            updated = facade.update_review(review_id, data)
-            return {"message": "Review updated successfully"}, 200
+            user = facade.update_user(user_id, payload)
         except ValueError as e:
-            api.abort(400, str(e))
+            return {"error": str(e)}, 400
+        if not user:
+            return {"error": "User not found"}, 404
+        return user.to_dict(), 200
 
     @api.response(200, 'Review deleted successfully')
     @api.response(404, 'Review not found')
