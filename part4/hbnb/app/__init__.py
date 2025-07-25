@@ -3,15 +3,20 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_restx import Api
+from flask_cors import CORS
+from config import DevelopmentConfig
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 jwt = JWTManager()
 
-def create_app(config_class="config.DevelopmentConfig"):
+def create_app(config_class=DevelopmentConfig):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
+    CORS(app, supports_credentials=True, resources={r"/api/v1/*": {"origins": "*"}})
+
+    from app.models.user import User
     db.init_app(app)
     bcrypt.init_app(app)
     jwt.init_app(app)
@@ -51,8 +56,13 @@ def create_app(config_class="config.DevelopmentConfig"):
     with app.app_context():
         db.create_all()
 
+        from sqlalchemy import inspect
+        print("📦 Tables créées :", inspect(db.engine).get_table_names())
+
         from app.models.user import User
         admin = User.query.filter_by(email="admin@hbnb.io").first()
+        print("👤 Admin existant ?", bool(admin))
+
         if not admin:
             hashed_pw = bcrypt.generate_password_hash("admin1234").decode()
             admin = User(
@@ -65,15 +75,8 @@ def create_app(config_class="config.DevelopmentConfig"):
             )
             db.session.add(admin)
             db.session.commit()
+            print("✅ Admin créé.")
         else:
-            changed = False
-            if not admin.is_admin:
-                admin.is_admin = True
-                changed = True
-            if not admin.verify_password("admin1234"):
-                admin.hash_password("admin1234")
-                changed = True
-            if changed:
-                db.session.commit()
+            print("ℹ️ Admin déjà présent.")
 
     return app
