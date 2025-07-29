@@ -85,6 +85,7 @@ class PlaceResource(Resource):
                 "id": str(place.id),
                 "title": place.title,
                 "description": place.description,
+                "price": place.price,
                 "latitude": place.latitude,
                 "longitude": place.longitude,
                 "owner": {
@@ -93,6 +94,7 @@ class PlaceResource(Resource):
                     "last_name": owner.last_name,
                     "email": owner.email
                 },
+                "host": f"{owner.first_name} {owner.last_name}",
                 "amenities": amenities
             }
 
@@ -148,3 +150,46 @@ class PlaceResource(Resource):
             return {'error': str(e)}, 404
         except Exception as e:
             return {'error': str(e)}, 400
+
+@api.route('/<string:place_id>/reviews')
+class PlaceReviewList(Resource):
+    @api.response(200, 'List of reviews for the place retrieved successfully')
+    @api.response(404, 'Place not found')
+    def get(self, place_id):
+        """ Retrieve reviews for a specific place """
+        try:
+            reviews = facade.get_reviews_by_place(place_id)
+            return [r.to_dict() for r in reviews], 200
+        except ValueError as e:
+            return {'error': str(e)}, 404
+
+    @jwt_required()
+    @api.expect(api.model('ReviewInput', {
+        'text': fields.String(required=True),
+        'rating': fields.Integer(required=True, min=1, max=5)
+    }))
+    def post(self, place_id):
+        """ Add a review for a place """
+        user_id = get_jwt_identity()
+        data = request.get_json()
+
+        try:
+            place = facade.get_place(place_id)
+            if not place:
+                return {'error': 'Place not found'}, 404
+
+            if place.user_id == user_id:
+                return {'error': 'You cannot review your own place'}, 400
+
+            already_reviewed = facade.get_review_by_user_and_place(user_id, place_id)
+            if already_reviewed:
+                return {'error': 'You already reviewed this place'}, 400
+
+            data['user_id'] = user_id
+            data['place_id'] = place_id
+            review = facade.create_review(data)
+
+            return review.to_dict(), 201
+        except ValueError as e:
+            return {'error': str(e)}, 400
+
