@@ -177,17 +177,129 @@ h1 {
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  width: 260px;
+  width: 280px;
   text-align: center;
   flex: 0 1 auto;
+  transition: transform 0.2s ease;
+}
+
+.place-card:hover {
+  transform: translateY(-5px);
+}
+
+.place-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #222;
+}
+
+.place-price {
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 12px;
 }
 
 .place-image {
   width: 100%;
-  height: 160px;
+  height: 180px;
   object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.place-name {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #222;
+}
+
+.place-box {
+  background-color: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  max-width: 700px;
+  margin: 0 auto 32px;
+  line-height: 1.6;
+}
+
+.place-box p {
+  margin-bottom: 10px;
+}
+
+.review-title {
+  text-align: center;
+  font-size: 1.6rem;
+  margin-top: 32px;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.reviews-container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.review-card {
+  background-color: #fff;
+  padding: 16px;
   border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.review-card p {
+  margin: 6px 0;
+}
+
+.no-review {
+  text-align: center;
+  color: #777;
+  font-style: italic;
+}
+
+.add-review-section {
+  max-width: 700px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 40px;
+}
+
+.add-review-section h2 {
   margin-bottom: 12px;
+  font-size: 1.4rem;
+  color: #222;
+}
+
+#review-text {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.details-button {
+  background-color: #ff8c00;
+  padding: 10px 18px;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.details-button:hover {
+  background-color: #e67e00;
+  transform: scale(1.05);
 }
 
 .no-result {
@@ -230,6 +342,30 @@ h1 {
 .logout-button:hover {
   background-color: #e0484e;
 }
+
+.delete-btn {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  transition: background-color 0.3s;
+}
+
+.delete-btn:hover {
+  background-color: #e04040;
+}
+
+.delete-btn i {
+  font-style: normal;
+}
+
 
 footer {
   background-color: #dcd7d9;
