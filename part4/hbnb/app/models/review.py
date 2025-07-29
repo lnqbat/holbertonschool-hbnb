@@ -10,6 +10,8 @@ class Review(BaseModel):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     place_id = db.Column(db.Integer, db.ForeignKey('places.id'), nullable=False)
 
+    user = db.relationship("User", back_populates="reviews")
+
     def __init__(self, text, rating):
         super().__init__()
         if not text:
@@ -25,4 +27,6 @@ class Review(BaseModel):
             'id': self.id,
             'text': self.text,
             'rating': self.rating,
+            'user_id': self.user_id,
+            'user_name': f"{self.user.first_name} {self.user.last_name}" if self.user else "Anonymous"
         }
