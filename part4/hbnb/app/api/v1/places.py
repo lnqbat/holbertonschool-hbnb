@@ -192,4 +192,3 @@ class PlaceReviewList(Resource):
             return review.to_dict(), 201
         except ValueError as e:
             return {'error': str(e)}, 400
-
