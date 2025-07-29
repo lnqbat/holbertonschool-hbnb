@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Available Places - HBnB</title>
+  <title>List of Places</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -24,8 +24,9 @@
   </header>
 
   <main>
-    <h1>Available Places</h1>
-
+    <div class="header-actions">
+      <button class="create-button" onclick="window.location.href='create_place.html'">+ Create Place</button>
+    </div>
     <div class="filter-bar">
       <label for="price-filter"><strong>Max Price:</strong></label>
       <select id="price-filter">
