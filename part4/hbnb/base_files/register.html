@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register - HBNB</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="scripts.js"></script>
+</head>
+<body>
+  <header class="navbar">
+    <div class="navbar-left">
+      <div class="logo">
+        <img src="images/logo.png" alt="HBnB">
+        <span class="logo-text"></span>
+      </div>
+    </div>
+    <div class="navbar-right">
+      <a href="index.html" class="nav-button">Home</a>
+      <a href="login.html" class="nav-button active login-button" id="login-link">Login</a>
+    </div>
+  </header>
+
+  <main class="auth-container">
+    <div class="auth-box">
+      <h2>Sign Up</h2>
+      <form id="register-form">
+        <div class="name-fields">
+          <label for="first-name">First Name</label>
+          <input type="text" id="first-name" placeholder="First name" required />
+
+          <label for="last-name">Last Name</label>
+          <input type="text" id="last-name" placeholder="Last name" required />
+        </div>
+
+        <label for="email">Email</label>
+        <input type="email" id="register-email" placeholder="Enter your email" required />
+
+        <label for="password">Password</label>
+        <input type="password" id="register-password" placeholder="Create a password" required />
+
+        <button type="submit" class="btn-primary">Register</button>
+
+        <div class="signup-link">
+          Already have an account? <a href="login.html">Log in</a>
+        </div>
+      </form>
+    </div>
+  </main>
+</body>
+</html>
