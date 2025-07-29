@@ -84,23 +84,18 @@ class ReviewResource(Resource):
 
     @api.response(200, 'Review deleted successfully')
     @api.response(404, 'Review not found')
+    @jwt_required()
     def delete(self, review_id):
-        """ Delete review """
-        try:
-            facade.delete_review(review_id)
-            return {"message": "Review deleted successfully"}, 200
-        except ValueError as e:
-            api.abort(404, str(e))
+        identity = get_jwt_identity()
+        claims = get_jwt()
+        is_admin = claims.get("is_admin", False)
 
+        review = facade.get_review(review_id)
+        if not review:
+            return {"error": "Review not found"}, 404
 
-@api.route('/places/<string:place_id>/reviews')
-class PlaceReviewList(Resource):
-    @api.response(200, 'List of reviews for the place retrieved successfully')
-    @api.response(404, 'Place not found')
-    def get(self, place_id):
-        """ Retrieve a review by place ID """
-        try:
-            reviews = facade.get_reviews_by_place(place_id)
-            return [r.to_dict() for r in reviews], 200
-        except ValueError as e:
-            api.abort(404, str(e))
+        if str(review.user_id) != str(identity) and not is_admin:
+            return {"error": "Unauthorized"}, 403
+
+        facade.delete_review(review_id)
+        return {"message": "Review deleted"}, 200
