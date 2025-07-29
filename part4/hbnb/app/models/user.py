@@ -12,7 +12,7 @@ class User(BaseModel):
     is_admin = db.Column(db.Boolean, default=False)
 
     places = db.relationship('Place', back_populates='owner', cascade='all, delete')
-    reviews = db.relationship('Review', backref='user', lazy=True)
+    reviews = db.relationship("Review", back_populates="user", cascade="all, delete-orphan")
 
     def __init__(self, first_name, last_name, email, password=None, hashed=False, is_admin=False):
         super().__init__()
