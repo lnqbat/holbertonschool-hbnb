@@ -168,7 +168,9 @@ class HBnBFacade:
         if rating is None or not (0 <= rating <= 5):
             raise ValueError("Rating must be between 0 and 5.")
 
-        review = Review(text=text, rating=rating, user=user, place=place)
+        review = Review(text=text, rating=rating)
+        review.user_id = user.id
+        review.place_id = place.id
         self.review_repository.add(review)
         return review
 
@@ -200,3 +202,6 @@ class HBnBFacade:
             if not place:
                 raise ValueError("Place not found")
             self.place_repository.delete(place_id)
+
+    def get_review_by_user_and_place(self, user_id, place_id):
+        return Review.query.filter_by(user_id=user_id, place_id=place_id).first()
