@@ -19,7 +19,12 @@
     </div>
     <div class="navbar-right">
       <a href="login.html" class="nav-button login-button" id="login-link">Login</a>
-      <button id="logout-btn" class="nav-button logout-button" style="display: none;">Logout</button>
+
+      <div class="user-menu" id="user-menu" style="display: none;">
+      <button class="nav-button user-button" id="user-name-button"></button>
+      <div class="dropdown-content" id="dropdown-content">
+        <a href="#" id="logout-link">Logout</a>
+      </div>
     </div>
   </header>
 
