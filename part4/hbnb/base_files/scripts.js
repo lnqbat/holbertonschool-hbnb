@@ -163,22 +163,45 @@ async function loginUser(email, password) {
 function checkAuthentication() {
   const token = getCookie('token');
   const loginLink = document.getElementById('login-link');
-  const logoutBtn = document.getElementById('logout-btn');
+  const userMenu = document.getElementById('user-menu');
+  const userButton = document.getElementById('user-name-button');
+  const logoutLink = document.getElementById('logout-link');
+  const createButton = document.querySelector('.create-button');
 
   if (token) {
-    if (loginLink) loginLink.style.display = 'none';
-    if (logoutBtn) logoutBtn.style.display = 'inline-block';
-    fetchPlaces(token);
-  } else {
-    if (loginLink) loginLink.style.display = 'inline-block';
-    if (logoutBtn) logoutBtn.style.display = 'none';
-  }
+    const payload = parseJwt(token);
+    const firstName = payload?.first_name || '';
+    const lastName = payload?.last_name || '';
+    const fullName = `${firstName} ${lastName}`.trim() || 'User';
+    userButton.textContent = fullName;
 
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
+
+    if (loginLink) loginLink.style.display = 'none';
+    if (userMenu) userMenu.style.display = 'inline-block';
+    if (userButton) userButton.textContent = fullName;
+
+    if (createButton) createButton.style.display = 'inline-block';
+
+    userButton?.addEventListener('click', () => {
+      userMenu.classList.toggle('show');
+    });
+
+    logoutLink?.addEventListener('click', () => {
       document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       window.location.href = 'login.html';
     });
+
+    window.addEventListener('click', (e) => {
+      if (!userMenu.contains(e.target)) {
+        userMenu.classList.remove('show');
+      }
+    });
+
+    fetchPlaces(token);
+  } else {
+    if (loginLink) loginLink.style.display = 'inline-block';
+    if (userMenu) userMenu.style.display = 'none';
+    if (createButton) createButton.style.display = 'none';
   }
 }
 
