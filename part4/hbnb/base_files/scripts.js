@@ -1,85 +1,125 @@
+function parseJwt(token) {
+  try {
+    const payload = token.split('.')[1];
+    return JSON.parse(atob(payload));
+  } catch (e) {
+    return null;
+  }
+}
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  return parts.length === 2 ? parts.pop().split(';').shift() : null;
+}
+
+function logout() {
+  document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  window.location.href = "login.html";
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  checkAuthentication();
-
-  const loginForm = document.getElementById('login-form');
-  const registerForm = document.getElementById('register-form');
-  const priceFilter = document.getElementById('price-filter');
-  const placeDetailsSection = document.getElementById('place-details');
-  const reviewForm = document.getElementById('review-form');
-  const addReviewSection = document.getElementById('add-review');
-
   const token = getCookie('token');
-  const placeId = getPlaceIdFromURL();
   const payload = parseJwt(token);
   const userId = payload?.sub;
   const isAdmin = payload?.is_admin;
 
+  const userMenu = document.getElementById('user-menu');
+  const userButton = document.getElementById('user-name-button');
+  const logoutLink = document.getElementById('logout-link');
+  const dropdownWelcome = document.getElementById('dropdown-welcome');
+  const isMyPlacesPage = window.location.pathname.includes('my-places.html');
+
+if (isMyPlacesPage) {
+  const token = getCookie('token');
+  const payload = parseJwt(token);
+
+  if (!token || !payload?.sub) {
+    window.location.href = 'index.html';
+  } else {
+    fetchMyPlaces(token);
+  }
+}
+
+  if (token && payload?.first_name) {
+    const fullName = payload.first_name;
+    if (dropdownWelcome) dropdownWelcome.textContent = `Welcome, ${fullName}`;
+    if (userMenu) userMenu.style.display = 'inline-block';
+  }
+
+  userButton?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    userMenu.classList.toggle('show');
+  });
+
+  window.addEventListener('click', (e) => {
+    if (!userMenu.contains(e.target)) {
+      userMenu.classList.remove('show');
+    }
+  });
+
+  logoutLink?.addEventListener('click', (e) => {
+    e.preventDefault();
+    logout();
+  });
+
+  checkAuthentication();
+
+  const loginForm = document.getElementById('login-form');
   if (loginForm) {
-  loginForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-
-    const emailInput = document.getElementById('login-email');
-    const passwordInput = document.getElementById('login-password');
-
-    if (!emailInput || !passwordInput) {
-      return alert('Login form fields missing.');
-    }
-
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
-
-    if (!email || !password) {
-      return alert('Please enter both email and password.');
-    }
-
-    try {
-      await loginUser(email, password);
-    } catch (error) {
-      console.error('Login error:', error);
-      alert('An unexpected error occurred.');
-    }
-  });
-}
-
-  if (registerForm) {
-  registerForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-
-    const firstName = document.getElementById('first-name')?.value.trim();
-    const lastName = document.getElementById('last-name')?.value.trim();
-    const email = document.getElementById('register-email')?.value.trim();
-    const password = document.getElementById('register-password')?.value;
-
-    if (!firstName || !lastName || !email || !password) {
-      return alert('All fields are required for registration.');
-    }
-
-    try {
-      const response = await fetch('http://127.0.0.1:5000/api/v1/users/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          first_name: firstName,
-          last_name: lastName,
-          email: email,
-          password: password
-        })
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        alert(`✅ Welcome ${result.first_name}, your account was created!`);
-        window.location.href = 'login.html';
-      } else {
-        const errorData = await response.json();
-        alert(`❌ Registration failed: ${errorData.message || response.statusText}`);
+    loginForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const email = document.getElementById('login-email')?.value.trim();
+      const password = document.getElementById('login-password')?.value;
+      if (!email || !password) return alert('Please enter both email and password.');
+      try {
+        await loginUser(email, password);
+      } catch (error) {
+        console.error('Login error:', error);
+        alert('An unexpected error occurred.');
       }
-    } catch (error) {
-      console.error('Registration error:', error);
-      alert('Unexpected error during registration.');
-    }
-  });
-}
+    });
+  }
+
+  const registerForm = document.getElementById('register-form');
+  if (registerForm) {
+    registerForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const firstName = document.getElementById('first-name')?.value.trim();
+      const lastName = document.getElementById('last-name')?.value.trim();
+      const email = document.getElementById('register-email')?.value.trim();
+      const password = document.getElementById('register-password')?.value;
+
+      if (!firstName || !lastName || !email || !password) {
+        return alert('All fields are required for registration.');
+      }
+
+      try {
+        const response = await fetch('http://127.0.0.1:5000/api/v1/users/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ first_name: firstName, last_name, email, password })
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          alert(`✅ Welcome ${result.first_name}, your account was created!`);
+          window.location.href = 'login.html';
+        } else {
+          const errorData = await response.json();
+          alert(`❌ Registration failed: ${errorData.message || response.statusText}`);
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        alert('Unexpected error during registration.');
+      }
+    });
+  }
+
+  const placeId = getPlaceIdFromURL();
+  const placeDetailsSection = document.getElementById('place-details');
+  const addReviewSection = document.getElementById('add-review');
+  const reviewForm = document.getElementById('review-form');
 
   if (placeDetailsSection && placeId) {
     if (addReviewSection) {
@@ -91,9 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (reviewForm && token && placeId) {
     reviewForm.addEventListener('submit', async (event) => {
       event.preventDefault();
-      const reviewText = document.getElementById('review-text').value.trim();
+      const reviewText = document.getElementById('review-text')?.value.trim();
       const ratingValue = parseInt(document.getElementById('review-rating')?.value, 10);
-
       if (!reviewText || isNaN(ratingValue)) {
         return alert('Please fill out both the review and the rating.');
       }
@@ -123,25 +162,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const priceFilter = document.getElementById('price-filter');
   if (priceFilter) {
     priceFilter.addEventListener('change', handlePriceFilter);
   }
 });
-
-function parseJwt(token) {
-  try {
-    const payload = token.split('.')[1];
-    return JSON.parse(atob(payload));
-  } catch (e) {
-    return null;
-  }
-}
-
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  return parts.length === 2 ? parts.pop().split(';').shift() : null;
-}
 
 async function loginUser(email, password) {
   const response = await fetch('http://127.0.0.1:5000/api/v1/auth/login', {
@@ -162,45 +187,13 @@ async function loginUser(email, password) {
 
 function checkAuthentication() {
   const token = getCookie('token');
-  const loginLink = document.getElementById('login-link');
-  const userMenu = document.getElementById('user-menu');
-  const userButton = document.getElementById('user-name-button');
-  const logoutLink = document.getElementById('logout-link');
   const createButton = document.querySelector('.create-button');
 
   if (token) {
     const payload = parseJwt(token);
-    const firstName = payload?.first_name || '';
-    const lastName = payload?.last_name || '';
-    const fullName = `${firstName} ${lastName}`.trim() || 'User';
-    userButton.textContent = fullName;
-
-
-    if (loginLink) loginLink.style.display = 'none';
-    if (userMenu) userMenu.style.display = 'inline-block';
-    if (userButton) userButton.textContent = fullName;
-
     if (createButton) createButton.style.display = 'inline-block';
-
-    userButton?.addEventListener('click', () => {
-      userMenu.classList.toggle('show');
-    });
-
-    logoutLink?.addEventListener('click', () => {
-      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      window.location.href = 'login.html';
-    });
-
-    window.addEventListener('click', (e) => {
-      if (!userMenu.contains(e.target)) {
-        userMenu.classList.remove('show');
-      }
-    });
-
     fetchPlaces(token);
   } else {
-    if (loginLink) loginLink.style.display = 'inline-block';
-    if (userMenu) userMenu.style.display = 'none';
     if (createButton) createButton.style.display = 'none';
   }
 }
@@ -209,10 +202,7 @@ async function fetchPlaces(token) {
   try {
     const response = await fetch('http://127.0.0.1:5000/api/v1/places/', {
       method: 'GET',
-      cache: 'no-store',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: { 'Authorization': `Bearer ${token}` }
     });
 
     if (!response.ok) throw new Error('Failed to fetch places');
@@ -227,19 +217,26 @@ async function fetchPlaces(token) {
 function displayPlaces(places) {
   const placesList = document.getElementById('places-list');
   if (!placesList) return;
+
   placesList.innerHTML = '';
 
   if (!places || places.length === 0) {
-    const noResult = document.createElement('p');
-    noResult.className = 'no-result';
-    noResult.textContent = 'No places available.';
-    placesList.appendChild(noResult);
+    const message = document.createElement('p');
+    message.className = 'no-result';
+
+    if (window.location.pathname.includes('my-places.html')) {
+      message.textContent = 'You have not created any places yet.';
+    } else {
+      message.textContent = 'No places available.';
+    }
+
+    placesList.appendChild(message);
     return;
   }
 
   places.forEach(place => {
     const title = place.name || place.title || 'Untitled';
-    const price = place.price || place.price_by_night || 0;
+    const price = place.price || 0;
     const imageUrl = place.image_url || 'images/places.png';
 
     const placeCard = document.createElement('div');
@@ -279,22 +276,19 @@ async function fetchPlaceDetails(token, placeId) {
       method: 'GET',
       headers
     });
+
     if (!response.ok) throw new Error('Failed to fetch place details');
     const place = await response.json();
 
     displayPlaceDetails(place);
 
-    try {
-      const reviewResponse = await fetch(`http://127.0.0.1:5000/api/v1/places/${placeId}/reviews`, {
-        method: 'GET',
-        headers
-      });
-      const reviews = reviewResponse.ok ? await reviewResponse.json() : [];
-      displayReviews(reviews);
-    } catch (reviewError) {
-      console.warn('Failed to load reviews:', reviewError);
-      displayReviews([]);
-    }
+    const reviewResponse = await fetch(`http://127.0.0.1:5000/api/v1/places/${placeId}/reviews`, {
+      method: 'GET',
+      headers
+    });
+
+    const reviews = reviewResponse.ok ? await reviewResponse.json() : [];
+    displayReviews(reviews);
   } catch (error) {
     console.error('Error loading place details:', error);
     alert('Could not load place details.');
@@ -304,29 +298,24 @@ async function fetchPlaceDetails(token, placeId) {
 function displayPlaceDetails(place) {
   const container = document.getElementById('place-details');
   if (!container) return;
-  container.innerHTML = '';
 
-  const title = place.title || place.name || 'Untitled Place';
+  const title = place.title || 'Untitled Place';
   const host = place.owner?.first_name + ' ' + place.owner?.last_name || 'Unknown';
   const description = place.description || 'No description available.';
   const price = typeof place.price === 'number' ? place.price.toFixed(2) : 'N/A';
   const amenities = place.amenities || [];
 
-  const titleElem = document.createElement('h1');
-  titleElem.className = 'place-name';
-  titleElem.textContent = title;
-
-  const infoBox = document.createElement('div');
-  infoBox.className = 'place-box';
-  infoBox.innerHTML = `
-    <p><strong>Host:</strong> ${host}</p>
-    <p><strong>Price per night:</strong> $${price}</p>
-    <p><strong>Description:</strong> ${description}</p>
-    <p><strong>Amenities:</strong> ${amenities.map(a => a.name).join(', ') || 'None'}</p>
+  container.innerHTML = `
+    <h1 class="place-name">${title}</h1>
+    <div class="place-box">
+      <p><strong>Host:</strong> ${host}</p>
+      <p><strong>Price per night:</strong> $${price}</p>
+      <p><strong>Description:</strong> ${description}</p>
+      <p><strong>Amenities:</strong> ${amenities.map(a => a.name).join(', ') || 'None'}</p>
+    </div>
+    <h2 class="review-title">Reviews</h2>
+    <div class="reviews-container"></div>
   `;
-
-  container.appendChild(titleElem);
-  container.appendChild(infoBox);
 
   const token = getCookie('token');
   const payload = parseJwt(token);
@@ -337,19 +326,13 @@ function displayPlaceDetails(place) {
     const deleteButton = document.createElement('button');
     deleteButton.className = 'place-delete-button';
     deleteButton.textContent = '🗑️ Delete this place';
-
     deleteButton.addEventListener('click', async () => {
-      const confirmed = confirm('Are you sure you want to delete this place?');
-      if (!confirmed) return;
-
+      if (!confirm('Are you sure you want to delete this place?')) return;
       try {
         const res = await fetch(`http://127.0.0.1:5000/api/v1/places/${place.id}`, {
           method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          headers: { 'Authorization': `Bearer ${token}` }
         });
-
         if (res.ok) {
           alert('✅ Place deleted');
           window.location.href = 'index.html';
@@ -362,31 +345,17 @@ function displayPlaceDetails(place) {
         alert('Network error while deleting place.');
       }
     });
-
     container.appendChild(deleteButton);
   }
-  const reviewTitle = document.createElement('h2');
-  reviewTitle.className = 'review-title';
-  reviewTitle.textContent = 'Reviews';
-
-  const reviewSection = document.createElement('div');
-  reviewSection.className = 'reviews-container';
-
-  container.appendChild(reviewTitle);
-  container.appendChild(reviewSection);
 }
 
 function displayReviews(reviews) {
   const reviewSection = document.querySelector('.reviews-container');
   if (!reviewSection) return;
-
   reviewSection.innerHTML = '';
 
-  if (!reviews || reviews.length === 0) {
-    const noReview = document.createElement('p');
-    noReview.className = 'no-review';
-    noReview.textContent = 'No reviews yet.';
-    reviewSection.appendChild(noReview);
+  if (!reviews.length) {
+    reviewSection.innerHTML = '<p class="no-review">No reviews yet.</p>';
     return;
   }
 
@@ -396,57 +365,67 @@ function displayReviews(reviews) {
   const isAdmin = payload?.is_admin;
 
   reviews.forEach(review => {
-  const card = document.createElement('div');
-  card.className = 'review-card';
+    const card = document.createElement('div');
+    card.className = 'review-card';
 
-  let deleteButtonHTML = '';
-  const token = getCookie('token');
-  const currentUserId = parseJwt(token)?.sub;
-  const isAdmin = parseJwt(token)?.is_admin;
-
-  if (review.user_id === currentUserId || isAdmin) {
-    deleteButtonHTML = `
-      <button class="delete-btn" data-id="${review.id}">
-        <i class="fas fa-trash-alt"></i> Delete
-      </button>
+    const canDelete = review.user_id === currentUserId || isAdmin;
+    card.innerHTML = `
+      <p><strong>${review.user_name || 'Anonymous'}:</strong></p>
+      <p>${review.text}</p>
+      ${review.rating ? `<p>Rating: ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</p>` : ''}
+      ${canDelete ? `<button class="delete-btn" data-id="${review.id}"><i class="fas fa-trash-alt"></i> Delete</button>` : ''}
     `;
-  }
 
-  card.innerHTML = `
-    <p><strong>${review.user_name || 'Anonymous'}:</strong></p>
-    <p>${review.text}</p>
-    ${review.rating ? `<p>Rating: ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</p>` : ''}
-    ${deleteButtonHTML}
-  `;
-
-  const deleteBtn = card.querySelector('.delete-btn');
-  if (deleteBtn) {
-    deleteBtn.addEventListener('click', async () => {
-      const confirmed = confirm('Are you sure you want to delete this review?');
-      if (!confirmed) return;
-
-      try {
-        const res = await fetch(`http://127.0.0.1:5000/api/v1/reviews/${review.id}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`
+    if (canDelete) {
+      const deleteBtn = card.querySelector('.delete-btn');
+      deleteBtn.addEventListener('click', async () => {
+        if (!confirm('Are you sure you want to delete this review?')) return;
+        try {
+          const res = await fetch(`http://127.0.0.1:5000/api/v1/reviews/${review.id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            alert('Review deleted successfully');
+            fetchPlaceDetails(token, getPlaceIdFromURL());
+          } else {
+            const err = await res.json();
+            alert(`Error: ${err.error || 'Failed to delete review'}`);
           }
-        });
-
-        if (res.ok) {
-          alert('Review deleted successfully');
-          fetchPlaceDetails(token, getPlaceIdFromURL());
-        } else {
-          const err = await res.json();
-          alert(`Error: ${err.error || 'Failed to delete review'}`);
+        } catch (e) {
+          console.error('Delete error:', e);
+          alert('Unexpected error during deletion.');
         }
-      } catch (e) {
-        console.error('Delete error:', e);
-        alert('Unexpected error during deletion.');
+      });
+    }
+
+    reviewSection.appendChild(card);
+  });
+}
+
+async function fetchMyPlaces(token) {
+  try {
+    const response = await fetch('http://127.0.0.1:5000/api/v1/places/user/me', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     });
-  }
 
-  reviewSection.appendChild(card);
-});
+    if (response.status === 401) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    if (!response.ok) throw new Error('Failed to fetch user places');
+    const places = await response.json();
+    displayPlaces(places);
+  } catch (error) {
+    console.error('Error loading user places:', error);
+    const placesList = document.getElementById('places-list');
+    if (placesList) {
+      placesList.innerHTML = '<p class="no-result">Failed to load your places.</p>';
+    }
+  }
 }
