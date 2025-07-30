@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Places</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="scripts.js"></script>
+</head>
+<body>
+  <header class="navbar">
+  <div class="navbar-left">
+    <div class="logo">
+      <img src="images/logo.png" alt="HBnB">
+    </div>
+  </div>
+
+  <div class="navbar-right">
+    <a href="index.html" class="nav-button">Home</a>
+  <div class="user-menu" id="user-menu">
+    <button id="user-name-button" class="user-button">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 4a4 4 0 1 1 0 8a4 4 0 0 1 0-8Zm0 10c-4.42 0-8 1.79-8 4v2h16v-2c0-2.21-3.58-4-8-4Z"/>
+      </svg>
+    </button>
+
+    <div class="dropdown-content">
+      <span class="dropdown-welcome" id="dropdown-welcome">Welcome, user</span>
+      <a href="my-places.html" id="my-places-link">My Places</a>
+      <a href="#" id="logout-link">Logout</a>
+    </div>
+  </div>
+</div>
+</header>
+
+  <main>
+    <h1>My Places</h1>
+    <section id="places-list" class="places-container"></section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 HBnB. Baptiste Lonqueu.</p>
+  </footer>
+</body>
+</html>
