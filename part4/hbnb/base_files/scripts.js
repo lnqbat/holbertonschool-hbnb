@@ -248,7 +248,7 @@ function displayPlaces (places) {
       <img src="${imageUrl}" alt="${title}" class="place-image">
       <h2 class="place-title">${title}</h2>
       <p class="place-price">Price per night: $${price}</p>
-      <a class="details-button btn" href="place.html?id=${place.id}">View Details</a>
+      <a class="details-button btn view-button" href="place.html?id=${place.id}">View Details</a>
     `;
     placesList.appendChild(placeCard);
   });
