@@ -42,10 +42,14 @@ if (isMyPlacesPage) {
 }
 
   if (token && payload?.first_name) {
-    const fullName = payload.first_name;
-    if (dropdownWelcome) dropdownWelcome.textContent = `Welcome, ${fullName}`;
-    if (userMenu) userMenu.style.display = 'inline-block';
-  }
+  const fullName = payload.first_name;
+  if (dropdownWelcome) dropdownWelcome.textContent = `Welcome, ${fullName}`;
+  if (userMenu) userMenu.style.display = 'inline-block';
+} else {
+  const loginButton = document.getElementById('login-button');
+  if (loginButton) loginButton.style.display = 'inline-block';
+}
+
 
   userButton?.addEventListener('click', (e) => {
     e.stopPropagation();
