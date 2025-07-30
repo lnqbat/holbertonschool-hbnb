@@ -192,3 +192,13 @@ class PlaceReviewList(Resource):
             return review.to_dict(), 201
         except ValueError as e:
             return {'error': str(e)}, 400
+
+@api.route('/user/me')
+class MyPlaces(Resource):
+    @jwt_required()
+    def get(self):
+        """Retrieve all places for the currently authenticated user"""
+        user_id = get_jwt_identity()
+        places = facade.get_all_places()
+        user_places = [p.to_dict() for p in places if str(p.user_id) == str(user_id)]
+        return user_places, 200
