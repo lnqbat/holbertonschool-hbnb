@@ -173,6 +173,9 @@ h1 {
 }
 
 .place-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   background-color: white;
   border-radius: 12px;
   padding: 20px;
@@ -181,6 +184,12 @@ h1 {
   text-align: center;
   flex: 0 1 auto;
   transition: transform 0.2s ease;
+  height: 430px;
+}
+
+.place-card .view-button {
+  margin-top: auto;
+  align-self: center;
 }
 
 .place-card:hover {
