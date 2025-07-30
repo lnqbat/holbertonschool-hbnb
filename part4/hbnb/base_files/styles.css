@@ -359,23 +359,29 @@ h1 {
   background-color: #e0484e;
 }
 
-.delete-btn {
-  background-color: #ff4d4f;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  margin-top: 8px;
-  transition: background-color 0.3s;
+.action-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem 2rem;
 }
 
-.delete-btn:hover {
-  background-color: #e04040;
+.delete-place-btn {
+  background-color: #ff4d4f;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+  float: right;
+}
+
+.delete-place-btn:hover {
+  background-color: #e04344;
 }
 
 .delete-btn i {
