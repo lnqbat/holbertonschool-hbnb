@@ -1,4 +1,5 @@
-function parseJwt(token) {
+/* global alert, confirm */
+function parseJwt (token) {
   try {
     const payload = token.split('.')[1];
     return JSON.parse(atob(payload));
@@ -7,22 +8,20 @@ function parseJwt(token) {
   }
 }
 
-function getCookie(name) {
+function getCookie (name) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
   return parts.length === 2 ? parts.pop().split(';').shift() : null;
 }
 
-function logout() {
-  document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  window.location.href = "login.html";
+function logout () {
+  document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  window.location.href = 'login.html';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   const token = getCookie('token');
   const payload = parseJwt(token);
-  const userId = payload?.sub;
-  const isAdmin = payload?.is_admin;
 
   const userMenu = document.getElementById('user-menu');
   const userButton = document.getElementById('user-name-button');
@@ -30,26 +29,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const dropdownWelcome = document.getElementById('dropdown-welcome');
   const isMyPlacesPage = window.location.pathname.includes('my-places.html');
 
-if (isMyPlacesPage) {
-  const token = getCookie('token');
-  const payload = parseJwt(token);
+  if (isMyPlacesPage) {
+    const token = getCookie('token');
+    const payload = parseJwt(token);
 
-  if (!token || !payload?.sub) {
-    window.location.href = 'index.html';
-  } else {
-    fetchMyPlaces(token);
+    if (!token || !payload?.sub) {
+      window.location.href = 'index.html';
+    } else {
+      fetchMyPlaces(token);
+    }
   }
-}
 
   if (token && payload?.first_name) {
-  const fullName = payload.first_name;
-  if (dropdownWelcome) dropdownWelcome.textContent = `Welcome, ${fullName}`;
-  if (userMenu) userMenu.style.display = 'inline-block';
-} else {
-  const loginButton = document.getElementById('login-button');
-  if (loginButton) loginButton.style.display = 'inline-block';
-}
-
+    const fullName = payload.first_name;
+    if (dropdownWelcome) dropdownWelcome.textContent = `Welcome, ${fullName}`;
+    if (userMenu) userMenu.style.display = 'inline-block';
+  } else {
+    const loginButton = document.getElementById('login-button');
+    if (loginButton) loginButton.style.display = 'inline-block';
+  }
 
   userButton?.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -102,7 +100,7 @@ if (isMyPlacesPage) {
         const response = await fetch('http://127.0.0.1:5000/api/v1/users/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ first_name: firstName, last_name, email, password })
+          body: JSON.stringify({ first_name: firstName, last_name: lastName, email, password })
         });
 
         if (response.ok) {
@@ -145,7 +143,7 @@ if (isMyPlacesPage) {
         const response = await fetch(`http://127.0.0.1:5000/api/v1/places/${placeId}/reviews`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({ text: reviewText, rating: ratingValue })
@@ -172,7 +170,7 @@ if (isMyPlacesPage) {
   }
 });
 
-async function loginUser(email, password) {
+async function loginUser (email, password) {
   const response = await fetch('http://127.0.0.1:5000/api/v1/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -189,12 +187,11 @@ async function loginUser(email, password) {
   }
 }
 
-function checkAuthentication() {
+function checkAuthentication () {
   const token = getCookie('token');
   const createButton = document.querySelector('.create-button');
 
   if (token) {
-    const payload = parseJwt(token);
     if (createButton) createButton.style.display = 'inline-block';
     fetchPlaces(token);
   } else {
@@ -202,11 +199,11 @@ function checkAuthentication() {
   }
 }
 
-async function fetchPlaces(token) {
+async function fetchPlaces (token) {
   try {
     const response = await fetch('http://127.0.0.1:5000/api/v1/places/', {
       method: 'GET',
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` }
     });
 
     if (!response.ok) throw new Error('Failed to fetch places');
@@ -218,7 +215,7 @@ async function fetchPlaces(token) {
   }
 }
 
-function displayPlaces(places) {
+function displayPlaces (places) {
   const placesList = document.getElementById('places-list');
   if (!placesList) return;
 
@@ -257,7 +254,7 @@ function displayPlaces(places) {
   });
 }
 
-function handlePriceFilter(event) {
+function handlePriceFilter (event) {
   const selectedValue = event.target.value;
   const cards = document.querySelectorAll('#places-list .place-card');
 
@@ -267,13 +264,13 @@ function handlePriceFilter(event) {
   });
 }
 
-function getPlaceIdFromURL() {
+function getPlaceIdFromURL () {
   const params = new URLSearchParams(window.location.search);
   return params.get('id');
 }
 
-async function fetchPlaceDetails(token, placeId) {
-  const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+async function fetchPlaceDetails (token, placeId) {
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
   try {
     const response = await fetch(`http://127.0.0.1:5000/api/v1/places/${placeId}`, {
@@ -299,7 +296,7 @@ async function fetchPlaceDetails(token, placeId) {
   }
 }
 
-function displayPlaceDetails(place) {
+function displayPlaceDetails (place) {
   const container = document.getElementById('place-details');
   if (!container) return;
 
@@ -326,16 +323,22 @@ function displayPlaceDetails(place) {
   const userId = payload?.sub;
   const isAdmin = payload?.is_admin;
 
+  const addReviewSection = document.getElementById('add-review');
+  if (token && place.owner?.id === userId && addReviewSection) {
+    addReviewSection.style.display = 'none';
+  }
+
   if (token && (isAdmin || place.owner?.id === userId)) {
     const deleteButton = document.createElement('button');
-    deleteButton.className = 'place-delete-button';
-    deleteButton.textContent = '🗑️ Delete this place';
+    deleteButton.className = 'delete-place-btn';
+    deleteButton.innerHTML = '🗑️ Delete this place';
+
     deleteButton.addEventListener('click', async () => {
       if (!confirm('Are you sure you want to delete this place?')) return;
       try {
         const res = await fetch(`http://127.0.0.1:5000/api/v1/places/${place.id}`, {
           method: 'DELETE',
-          headers: { 'Authorization': `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
           alert('✅ Place deleted');
@@ -349,11 +352,18 @@ function displayPlaceDetails(place) {
         alert('Network error while deleting place.');
       }
     });
-    container.appendChild(deleteButton);
+
+    const actionBar = document.createElement('div');
+    actionBar.className = 'action-bar';
+    actionBar.appendChild(deleteButton);
+
+    const main = document.querySelector('main');
+    if (main) {
+      main.insertBefore(actionBar, main.firstChild);
+    }
   }
 }
-
-function displayReviews(reviews) {
+function displayReviews (reviews) {
   const reviewSection = document.querySelector('.reviews-container');
   if (!reviewSection) return;
   reviewSection.innerHTML = '';
@@ -387,7 +397,7 @@ function displayReviews(reviews) {
         try {
           const res = await fetch(`http://127.0.0.1:5000/api/v1/reviews/${review.id}`, {
             method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` }
           });
           if (res.ok) {
             alert('Review deleted successfully');
@@ -407,12 +417,12 @@ function displayReviews(reviews) {
   });
 }
 
-async function fetchMyPlaces(token) {
+async function fetchMyPlaces (token) {
   try {
     const response = await fetch('http://127.0.0.1:5000/api/v1/places/user/me', {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
