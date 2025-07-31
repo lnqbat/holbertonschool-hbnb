@@ -22,17 +22,9 @@ function logout () {
 document.addEventListener('DOMContentLoaded', () => {
   const token = getCookie('token');
   const payload = parseJwt(token);
-
-  const userMenu = document.getElementById('user-menu');
-  const userButton = document.getElementById('user-name-button');
-  const logoutLink = document.getElementById('logout-link');
-  const dropdownWelcome = document.getElementById('dropdown-welcome');
   const isMyPlacesPage = window.location.pathname.includes('my-places.html');
 
   if (isMyPlacesPage) {
-    const token = getCookie('token');
-    const payload = parseJwt(token);
-
     if (!token || !payload?.sub) {
       window.location.href = 'index.html';
     } else {
@@ -40,20 +32,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  const userMenu = document.getElementById('user-menu');
+  const userButton = document.getElementById('user-name-button');
+  const logoutLink = document.getElementById('logout-link');
+  const dropdownWelcome = document.getElementById('dropdown-welcome');
   const loginButton = document.getElementById('login-button');
 
   if (token && payload?.first_name) {
-    const fullName = payload.first_name;
-    if (dropdownWelcome) dropdownWelcome.textContent = `Welcome, ${fullName}`;
+    if (dropdownWelcome) dropdownWelcome.textContent = `Welcome, ${payload.first_name}`;
     if (userMenu) userMenu.style.display = 'inline-block';
     if (loginButton) loginButton.remove();
   } else {
     const isPlacePage = window.location.pathname.includes('place.html');
-    if (loginButton && !isPlacePage) {
-      loginButton.style.display = 'inline-block';
-    } else if (loginButton && isPlacePage) {
-      loginButton.remove();
-    }
+    if (loginButton && !isPlacePage) loginButton.style.display = 'inline-block';
+    else if (loginButton && isPlacePage) loginButton.remove();
   }
 
   userButton?.addEventListener('click', (e) => {
@@ -62,9 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   window.addEventListener('click', (e) => {
-    if (!userMenu.contains(e.target)) {
-      userMenu.classList.remove('show');
-    }
+    if (!userMenu.contains(e.target)) userMenu.classList.remove('show');
   });
 
   logoutLink?.addEventListener('click', (e) => {
@@ -131,9 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const reviewForm = document.getElementById('review-form');
 
   if (placeDetailsSection && placeId) {
-    if (addReviewSection) {
-      addReviewSection.style.display = token ? 'block' : 'none';
-    }
+    if (addReviewSection) addReviewSection.style.display = token ? 'block' : 'none';
     fetchPlaceDetails(token, placeId);
   }
 
@@ -222,22 +210,44 @@ async function fetchPlaces (token) {
   }
 }
 
+async function fetchMyPlaces (token) {
+  try {
+    const response = await fetch('http://127.0.0.1:5000/api/v1/places/user/me', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.status === 401) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    if (!response.ok) throw new Error('Failed to fetch user places');
+    const places = await response.json();
+    displayPlaces(places);
+  } catch (error) {
+    console.error('Error loading user places:', error);
+    const placesList = document.getElementById('places-list');
+    if (placesList) {
+      placesList.innerHTML = '<p class="no-result">Failed to load your places.</p>';
+    }
+  }
+}
+
 function displayPlaces (places) {
   const placesList = document.getElementById('places-list');
   if (!placesList) return;
-
   placesList.innerHTML = '';
 
   if (!places || places.length === 0) {
     const message = document.createElement('p');
     message.className = 'no-result';
-
-    if (window.location.pathname.includes('my-places.html')) {
-      message.textContent = 'You have not created any places yet.';
-    } else {
-      message.textContent = 'No places available.';
-    }
-
+    message.textContent = window.location.pathname.includes('my-places.html')
+      ? 'You have not created any places yet.'
+      : 'No places available.';
     placesList.appendChild(message);
     return;
   }
@@ -370,6 +380,7 @@ function displayPlaceDetails (place) {
     }
   }
 }
+
 function displayReviews (reviews) {
   const reviewSection = document.querySelector('.reviews-container');
   if (!reviewSection) return;
@@ -422,31 +433,4 @@ function displayReviews (reviews) {
 
     reviewSection.appendChild(card);
   });
-}
-
-async function fetchMyPlaces (token) {
-  try {
-    const response = await fetch('http://127.0.0.1:5000/api/v1/places/user/me', {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (response.status === 401) {
-      window.location.href = 'login.html';
-      return;
-    }
-
-    if (!response.ok) throw new Error('Failed to fetch user places');
-    const places = await response.json();
-    displayPlaces(places);
-  } catch (error) {
-    console.error('Error loading user places:', error);
-    const placesList = document.getElementById('places-list');
-    if (placesList) {
-      placesList.innerHTML = '<p class="no-result">Failed to load your places.</p>';
-    }
-  }
 }
