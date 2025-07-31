@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>List of Places</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script defer src="scripts.js"></script>
+</head>
+<body>
+
+  <header class="navbar">
+  <div class="navbar-left">
+    <div class="logo">
+      <img src="images/logo.png" alt="HBnB">
+    </div>
+  </div>
+
+  <div class="navbar-right">
+  <a href="index.html" class="nav-button">Home</a>
+
+  <button id="login-button" class="nav-button" style="display: none;" onclick="window.location.href='login.html'">Login</button>
+
+  <div class="user-menu" id="user-menu" style="display: none;">
+    <button id="user-name-button" class="user-button">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 4a4 4 0 1 1 0 8a4 4 0 0 1 0-8Zm0 10c-4.42 0-8 1.79-8 4v2h16v-2c0-2.21-3.58-4-8-4Z"/>
+      </svg>
+    </button>
+
+    <div class="dropdown-content">
+      <span class="dropdown-welcome" id="dropdown-welcome">Welcome, user</span>
+      <a href="my-places.html" id="my-places-link">My Places</a>
+      <a href="#" id="logout-link">Logout</a>
+    </div>
+  </div>
+</div>
+
+</header>
+
+  <main>
+    <h1>All Places</h1>
+    <div class="header-actions">
+    </div>
+    <div class="filter-bar">
+      <label for="price-filter"><strong>Max Price:</strong></label>
+      <select id="price-filter">
+        <option value="all">All</option>
+        <option value="100">$100</option>
+        <option value="150">$150</option>
+        <option value="200">$200</option>
+      </select>
+    </div>
+
+    <section id="places-list" class="places-container">
+      <h2>Available Places</h2>
+     </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 HBnB. Baptiste Lonqueu.</p>
+  </footer>
+
+</body>
+</html>
