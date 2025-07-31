@@ -95,7 +95,7 @@ And run
 ```
 python3 -m http.server
 ```
-✅ The frontend makes requests to the backend running on `http://localhost:8000`.
+✅ The frontend makes requests to the backend running on [http://localhost:8000]
 
 ---
 
