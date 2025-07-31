@@ -205,3 +205,8 @@ class HBnBFacade:
 
     def get_review_by_user_and_place(self, user_id, place_id):
         return Review.query.filter_by(user_id=user_id, place_id=place_id).first()
+
+    @staticmethod
+    def get_places_by_owner(user_id):
+        return Place.query.filter_by(user_id=user_id).all()
+
