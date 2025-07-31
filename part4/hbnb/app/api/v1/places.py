@@ -199,6 +199,6 @@ class MyPlaces(Resource):
     def get(self):
         """Retrieve all places for the currently authenticated user"""
         user_id = get_jwt_identity()
-        places = facade.get_all_places()
-        user_places = [p.to_dict() for p in places if str(p.user_id) == str(user_id)]
-        return user_places, 200
+        places = facade.get_places_by_owner(user_id)
+        return [p.to_dict() for p in places], 200
+
